@@ -13,5 +13,5 @@ int main () {
     const int size = 5;
     Data ** v = new Data * [size];
     Data ** p = foo(v, size);
-    delete [] *p;
+    delete [] p;
 }
