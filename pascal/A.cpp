@@ -20,7 +20,7 @@ void with_ref(const A & a) {}
 
 int main()
 {
-    std::cout << "My name is a" << std::endl
+    std::cout << "My name is a" << std::endl;
     A a("my name is a");
     std::cout << "1." << std::endl;
     A b = a;         // vad är skillnaden
