@@ -32,13 +32,13 @@ int main()
 
     std::cout << "noref(a)" << std::endl;
     no_ref(a);       // Bildas temporära objekt?
-    std::cout << "noref(b)" << std::endl;
+    std::cout << "with_ref(a)" << std::endl;
     with_ref(a);     // Bildas temporära objekt?
 
     std::cout << "Array creation" << std::endl;
     A *aa = new A[5];
     std::cout << "Array deletion" << std::endl;
-    delete aa;       // Vad kommer att hända?
+    delete[] aa;       // Vad kommer att hända?
     std::cout << "end main" << std::endl;
     return 0;
 }
