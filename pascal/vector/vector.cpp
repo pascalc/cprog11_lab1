@@ -24,7 +24,7 @@ public:
 };
 
 int main(){
-	Vector v(5);
-	std::cout << "v[2] = " << v[2] << std::endl;
+	Vector * v = new Vector(100);
+	std::cout << "v[2] = " << (*v)[2] << std::endl;
 	return 0;
 }
