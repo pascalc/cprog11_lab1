@@ -26,5 +26,6 @@ public:
 int main(){
 	Vector * v = new Vector(100);
 	std::cout << "v[2] = " << (*v)[2] << std::endl;
+	delete v;
 	return 0;
 }
