@@ -8,7 +8,7 @@ private:
 public:
 
 	// Standard constructor
-	Vector(int size) {
+	Vector(size_t size) {
 		array = new int [size];
 	}
 
@@ -18,14 +18,14 @@ public:
 	}
 
 	// vector[3] returns the int at index 3
-	int operator[](int index) {
+ 	int operator[](int index) const {
 		return array[index];
 	}
 };
 
 int main(){
-	Vector * v = new Vector(100);
-	std::cout << "v[2] = " << (*v)[2] << std::endl;
-	delete v;
+	Vector v(10);
+	std::cout << "v[2] = " << v[2] << std::endl;
+	std::cout << "sizeof(v) = " << sizeof(v) << std::endl;
 	return 0;
 }
