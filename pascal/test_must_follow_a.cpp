@@ -21,10 +21,17 @@ public:
         TS_ASSERT_EQUALS( result, 1);
     }
 
-    void test_a_is_first( void )
+    void test_a_is_last( void )
     {
         char vek[] = {'b', 'b', 'a', 'b', 'b'};
         int result = must_follow_a(vek, 3, 'a', 'b');
+        TS_ASSERT_EQUALS( result, 0);
+    }
+    
+    void test_tuple( void )
+    {
+        char vek[] = {'a', 'b'};
+        int result = must_follow_a(vek, 1, 'a', 'b');
         TS_ASSERT_EQUALS( result, 0);
     }    
 };
