@@ -12,5 +12,6 @@ Data ** foo(Data ** v, int x) {
 int main () {
     const int size = 5;
     Data ** v = new Data * [size];
-    foo(v, size);
+    Data ** p = foo(v, size);
+    delete [] p;
 }
