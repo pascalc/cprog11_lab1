@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdexcept>
-#include "vector_14.h"
+#include "vector.h"
 
 using namespace std;
 
@@ -17,8 +17,8 @@ Vector::Vector() {
 Vector::Vector(size_t size) {
 	// size = argument passed. capacity = size of "type of argument" * size
 	this->size = size;
-	capacity = size * sizeof(unsigned int);
-	array = new unsigned int[size];
+	capacity = size;
+	array = new unsigned int[capacity];
 	
 	// Set all values to zero
 	initiate(array);
@@ -26,17 +26,14 @@ Vector::Vector(size_t size) {
 
 // Copy constructor
 Vector::Vector(const Vector &v) {
-	unsigned int new_size = v.size;
-	unsigned int new_capacity = v.capacity;
-	unsigned int * buffer = new unsigned int[new_size];
+	unsigned int size = v.size;
+	unsigned int capacity = v.capacity;
+	unsigned int * array = new unsigned int[capacity];
 	
-	memcpy(buffer, v.array, new_capacity);
+	memcpy(array, v.array, capacity);
 
 	// memory secured??
 }
-
-// Delete constructor
-//Vector::~Vector() { delete [] array; }
 
 /** FUNCTION DECLARATIONS **/
 
@@ -56,8 +53,8 @@ unsigned int& Vector::operator[](unsigned int index) {
 Vector& Vector::operator=(const Vector &vector) {
 	
 	// allocate memory for new vector and copy elements from old vector
-	unsigned int * new_array = new unsigned int[vector.size];
-	memcpy(vector.array, new_array, vector.capacity);
+	unsigned int * new_array = new unsigned int[vector.capacity];
+	memcpy(new_array, vector.array, vector.capacity);
 
 	// free memory
 	delete [] array;

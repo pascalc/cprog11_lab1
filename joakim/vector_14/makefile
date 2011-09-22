@@ -7,18 +7,16 @@ PROG = test_vec
 	g++ -g -Wall $*.cpp -o $*.out
 
 # Change these
-cxxtestpath = cxxtest/cxxtest/
-testcode    = 1.2b.cpp
+cxxtestpath = ../cxxtest/
+testcode    = test_vec.h
+test_file	= vector.o
 
-#$(PROG): $(OBJ)
-#	$(CC) -g -o $(PROG)  $(OBJ)
+testcode.cpp: $(testcode)
+	$(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
 
-#%.o: %.cpp
-#	$(CC) $(FLAGS) -c $*.cpp
+test.out: testcode.cpp
+	g++ -o test.out -I $(cxxtestpath) testcode.cpp $(test_file)
 
-#testcode.cpp: $(testcode)
-#	$(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
-
-#clean:
-#	rm -f *.o $(PROG) test_vec.cpp
+clean:
+	rm -f *.o *.out testcode.cpp
 
