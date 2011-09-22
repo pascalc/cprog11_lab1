@@ -17,6 +17,7 @@ Vector::Vector() {
 Vector::Vector(size_t size) {
 	// size = argument passed. capacity = size of "type of argument" * size
 	this->size = size;
+	cout << endl << cout << "(dConst) Size : " << this->size << endl;
 	capacity = size;
 	array = new unsigned int[capacity];
 	
@@ -26,9 +27,11 @@ Vector::Vector(size_t size) {
 
 // Copy constructor
 Vector::Vector(const Vector &v) {
-	unsigned int size = v.size;
-	unsigned int capacity = v.capacity;
-	unsigned int * array = new unsigned int[capacity];
+	size = v.size;
+	cout << endl << cout << "(cConst) v.size : " << v.size << endl;
+
+	capacity = v.capacity;
+	array = new unsigned int[capacity];
 	
 	memcpy(array, v.array, capacity);
 
