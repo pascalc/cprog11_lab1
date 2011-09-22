@@ -13,7 +13,7 @@ class Vector {
 		// Constructors
 		Vector();
 		explicit Vector(size_t s);
-		explicit Vector(const Vector &v);
+		Vector(const Vector &v);
 		// Deconstructor
 		~Vector() { delete [] this->array; };
 

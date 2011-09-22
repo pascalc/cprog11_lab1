@@ -7,7 +7,7 @@ PROG = test_vec
 	g++ -g -Wall $*.cpp -o $*.out
 
 # Change these
-cxxtestpath = ../cxxtest/
+cxxtestpath = ../../../cxxtest/
 testcode    = test_vec.h
 test_file	= vector.o
 
