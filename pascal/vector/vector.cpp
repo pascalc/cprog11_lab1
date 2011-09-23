@@ -10,8 +10,7 @@ private:
 public:
 
 	// Standard constructor
-	Vector(size_t initial_size) {
-		std::cout << "Standard constructor" << std::endl;
+	explicit Vector(size_t initial_size) {
 		capacity = initial_size;
 		array = new int [initial_size];
 	}
@@ -21,7 +20,7 @@ public:
 		// Allocate a new array of the appropriate capacity and populate it
 		std::cout << "Copy constructor" << std::endl;
 		array = new int [copy.size()];
-		for (int i = 0; i < copy.size(); i++) {
+		for (unsigned int i = 0; i < copy.size(); i++) {
 			array[i] = copy[i];
 		}
 	}
@@ -38,37 +37,29 @@ public:
 	}
 
 	// Read operator
-	// vector[3] returns the int at index 3
- 	int operator[](int index) const {
- 		if (index >= capacity || index < 0) {
- 			throw std::out_of_range("Out of range!");
- 		}
- 		return array[index];	
+	int operator[](unsigned int index) const{
+		if (index >= capacity || index < 0) {
+			throw std::out_of_range("Out of range!");
+		}
+		return array[index];	
 	}
-
 	// Callback executed assigning to vector: v[2] = 3
-	struct setter {
-		// The address to write to
+	struct array_proxy {
 		int & ref;
-		// Initialise which address to write to
-		setter(int & i) : ref(i) {}
-		// When assigned to, write value to addr
+		array_proxy(int & r) : ref(r) {}
 		void operator = (int value) {
 			ref = value;
 		}
+		operator int() const{
+			return ref;
+		}
 	};
-	// Write operator
-	// vector[3] = 2 sets the int at index 3 to 2
- 	// 	array_setter& operator[](int index) {
- 	// 		if (index >= capacity || index < 0) {
- 	// 			throw std::out_of_range("Out of range!");
- 	// 		}
- 	// 		return array_setter(array[index]);	
-	// }
-	void set(int index, int value) {
-		//array[index] = value;
-		setter a = setter(array[index]);
-		a = value;
+	// Write via array_proxy
+	array_proxy operator[](unsigned int index) {
+		if (index >= capacity || index < 0) {
+			throw std::out_of_range("Out of range!");
+		}
+		return array_proxy(array[index]);	
 	}
 
 	// Assignment operator
@@ -82,7 +73,7 @@ public:
 		// Otherwise copy the rhs array into our own
 		capacity = rhs.size();
 		array = new int [capacity];
-		for (int i = 0; i < capacity; i++) {
+		for (int unsigned i = 0; i < capacity; i++) {
 			array[i] = rhs[i];
 		}
 		return *this;
@@ -91,8 +82,11 @@ public:
 
 int main(){
 	Vector v = Vector(5);
-	v.set(1,2);
-	v.set(0,1337);
-	std::cout << "v[0],v[1] = " << v[0] << "," << v[1] << std::endl;
+	Vector w = v;
+	for(int i = 0; i < 10; i++) {
+		v[0] = v[0] + 1;
+		std::cout << v[0] << std::endl;	
+	}
+	std::cout << w[0] << std::endl;		
 	return 0;
 }
