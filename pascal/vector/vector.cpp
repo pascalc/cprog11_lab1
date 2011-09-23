@@ -8,7 +8,6 @@ private:
 	size_t capacity;
 
 public:
-	// TODO: Copy constructor, assignment operator, setter: v[3] = 2;
 
 	// Standard constructor
 	Vector(size_t initial_size) {
@@ -47,6 +46,31 @@ public:
  		return array[index];	
 	}
 
+	// Callback executed assigning to vector: v[2] = 3
+	struct setter {
+		// The address to write to
+		int & ref;
+		// Initialise which address to write to
+		setter(int & i) : ref(i) {}
+		// When assigned to, write value to addr
+		void operator = (int value) {
+			ref = value;
+		}
+	};
+	// Write operator
+	// vector[3] = 2 sets the int at index 3 to 2
+ 	// 	array_setter& operator[](int index) {
+ 	// 		if (index >= capacity || index < 0) {
+ 	// 			throw std::out_of_range("Out of range!");
+ 	// 		}
+ 	// 		return array_setter(array[index]);	
+	// }
+	void set(int index, int value) {
+		//array[index] = value;
+		setter a = setter(array[index]);
+		a = value;
+	}
+
 	// Assignment operator
 	Vector& operator=(const Vector& rhs) {
 		std::cout << "= operator" << std::endl;
@@ -66,9 +90,9 @@ public:
 };
 
 int main(){
-	int x = 3;
-	const int & xref = x;
-	std::cout << &x << std::endl;
-	std::cout << &xref << std::endl;
+	Vector v = Vector(5);
+	v.set(1,2);
+	v.set(0,1337);
+	std::cout << "v[0],v[1] = " << v[0] << "," << v[1] << std::endl;
 	return 0;
 }
