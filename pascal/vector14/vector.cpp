@@ -7,7 +7,7 @@ class Vector {
 private:
 	// Internal 'backbone' array
 	int * array;
-	size_t capacity;
+	unsigned int capacity;
 
 public:
 	struct array_proxy {
@@ -30,7 +30,7 @@ public:
 	};
 
 	// Standard constructor
-	explicit Vector(size_t initial_size) {
+	explicit Vector(unsigned int initial_size) {
 		capacity = initial_size;
 		array = new int [initial_size];
 	}

@@ -6,8 +6,8 @@
 class Vector {
 public:
 	// Constructors
-	explicit Vector(size_t size);
-	Vector(const Vector & copy);
+	explicit Vector(unsigned int size);
+	Vector(const Vector& copy);
 	// Deconstructor
 	~Vector();
 
@@ -31,7 +31,7 @@ public:
 	};
 
 	// Functions
-	size_t size() const;
+	unsigned int size() const;
 	int operator[](int index) const;
 	array_proxy operator[](int index);
 	Vector& operator=(const Vector& rhs);
