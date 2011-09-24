@@ -34,6 +34,6 @@ public:
 	size_t size() const;
 	int operator[](int index) const;
 	array_proxy operator[](int index);
-	Vector& operator=(const Vector& rhs const);
+	Vector& operator=(const Vector& rhs);
 };
 #endif
