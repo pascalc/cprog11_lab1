@@ -5,10 +5,8 @@
 
 class Vector {
 public:
-	// Constructors
 	explicit Vector(unsigned int size);
 	Vector(const Vector& copy);
-	// Deconstructor
 	~Vector();
 
 	struct array_proxy {

@@ -51,7 +51,7 @@ public:
 	}
 
 	// Return the capacity of this Vector
-	size_t size() const {
+	unsigned int size() const {
 		return capacity;
 	}
 
@@ -88,7 +88,8 @@ public:
 };
 
 int main(){
-	Vector v = Vector(5);
+	unsigned int x = 5;
+	Vector v = Vector(x);
 	Vector w = v;
 	for(int i = 0; i < 10; i++) {
 		std::cout << v[0]++ << std::endl;	
