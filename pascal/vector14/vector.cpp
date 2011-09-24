@@ -1,6 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 
+//#include "vector.h"
+
 class Vector {
 private:
 	// Internal 'backbone' array
@@ -8,6 +10,24 @@ private:
 	size_t capacity;
 
 public:
+	struct array_proxy {
+		int & ref;
+		array_proxy(int & r) : ref(r) {}
+		void operator = (int value) {
+			ref = value;
+		}
+		operator int() const{
+			return ref;
+		}
+		// Prefix ++
+		int operator ++ () {
+			return ++ref;
+		}
+		// Postfix ++
+		int operator ++ (int i) {
+			return ref++;
+		}
+	};
 
 	// Standard constructor
 	explicit Vector(size_t initial_size) {
@@ -18,16 +38,15 @@ public:
 	// Copy constuctor
 	Vector(const Vector& copy) {
 		// Allocate a new array of the appropriate capacity and populate it
-		std::cout << "Copy constructor" << std::endl;
-		array = new int [copy.size()];
-		for (unsigned int i = 0; i < copy.size(); i++) {
+		capacity = copy.size();
+		array = new int [capacity];
+		for (unsigned int i = 0; i < capacity; i++) {
 			array[i] = copy[i];
 		}
 	}
 
 	// Deconstructor
 	~Vector() {
-		std::cout << "Destructor" << std::endl;
 		delete [] array;
 	}
 
@@ -43,17 +62,6 @@ public:
 		}
 		return array[index];	
 	}
-	// Callback executed assigning to vector: v[2] = 3
-	struct array_proxy {
-		int & ref;
-		array_proxy(int & r) : ref(r) {}
-		void operator = (int value) {
-			ref = value;
-		}
-		operator int() const{
-			return ref;
-		}
-	};
 	// Write via array_proxy
 	array_proxy operator[](unsigned int index) {
 		if (index >= capacity || index < 0) {
@@ -64,7 +72,6 @@ public:
 
 	// Assignment operator
 	Vector& operator=(const Vector& rhs) {
-		std::cout << "= operator" << std::endl;
 		// Trivial case, v1 = v1
 		// if (this == rhs) {
 		// 	return *this;
@@ -84,8 +91,7 @@ int main(){
 	Vector v = Vector(5);
 	Vector w = v;
 	for(int i = 0; i < 10; i++) {
-		v[0] = v[0] + 1;
-		std::cout << v[0] << std::endl;	
+		std::cout << v[0]++ << std::endl;	
 	}
 	std::cout << w[0] << std::endl;		
 	return 0;
