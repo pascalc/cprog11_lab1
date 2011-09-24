@@ -7,9 +7,9 @@ class Vector {
 public:
 	// Constructors
 	explicit Vector(size_t size);
-	Vector(const Vector & copy);
+	Vector::Vector(const Vector & copy);
 	// Deconstructor
-	~Vector();
+	Vector::~Vector();
 
 	struct array_proxy {
 		int & ref;
@@ -32,8 +32,8 @@ public:
 
 	// Functions
 	size_t size() const;
-	int operator[](unsigned int index) const;
-	array_proxy operator[](unsigned int index);
-	Vector& operator=(const Vector& rhs);
+	int Vector::operator[](int index) const;
+	array_proxy Vector::operator[](int index);
+	Vector& Vector::operator=(const Vector& rhs const);
 };
 #endif
