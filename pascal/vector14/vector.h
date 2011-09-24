@@ -32,8 +32,8 @@ public:
 
 	// Functions
 	size_t size() const;
-	int Vector::operator[](int index) const;
-	array_proxy Vector::operator[](int index);
-	Vector& Vector::operator=(const Vector& rhs const);
+	int operator[](int index) const;
+	array_proxy operator[](int index);
+	Vector& operator=(const Vector& rhs const);
 };
 #endif
