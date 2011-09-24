@@ -7,9 +7,9 @@ class Vector {
 public:
 	// Constructors
 	explicit Vector(size_t size);
-	Vector::Vector(const Vector & copy);
+	Vector(const Vector & copy);
 	// Deconstructor
-	Vector::~Vector();
+	~Vector();
 
 	struct array_proxy {
 		int & ref;
