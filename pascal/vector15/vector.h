@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <algorithm>
 
 #define INCREMENT_SIZE 20
 
@@ -95,22 +97,48 @@ public:
 	}
 
 	// Read operator
-	const T& operator[](unsigned int index) const {
+	const T& operator[](size_t index) const {
 		if (index >= size() || index < 0) {
 			throw std::out_of_range("Out of range!");
 		}
 		return start[index];	
 	}
 	
-	// Write operator
-	T& operator[](unsigned int index) {
+	// Write operators
+	
+	// SET the value at an index
+	T& operator[](size_t index) {
 		if (index >= size() || index < 0) {
 			throw std::out_of_range("Out of range!");
 		}
 		return start[index];	
 	}
+	
+	// INSERT and SHIFT at an index: eg v = [0,1,2,3]; v.insert(0,-1) -> v = [-1,0,1,2,3]
+	Vector<T>& insert(size_t index, T element) {
+		if (index > size() || index < 0) {
+			throw std::out_of_range("Out of range!");
+		}
+		if (index == size()) {
+			push_back(element);
+		} else {
+			// If we are full
+			if(next == end){
+				expand();	
+			}
+			// shift all the elements to the right, right by one
+			T * dest = &start[index+1];
+			T * source = &start[index];
+			size_t bytes = (size() - index) * sizeof(T);
+			memmove(dest,source,bytes);
 
-	// Append to the vector
+			start[index] = element;
+			next++;
+		}
+		return *this;
+	}
+	
+	// APPEND to the vector
 	T push_back(T element) {
 		if (next == end) {
 			expand();
@@ -118,6 +146,40 @@ public:
 		*next = element;
 		next++;	
 		return element;	
+	}
+	
+	// ERASE an element from the vector
+	Vector<T>& erase(size_t index) {
+		if (index >= size() || index < 0) {
+			throw std::out_of_range("Out of range!");
+		}
+		// shift all the elements to the right, left by one
+		T * dest = &start[index];
+		T * source = &start[index+1];
+		size_t bytes = (size() - index+1) * sizeof(T);
+		memmove(dest,source,bytes);
+
+		next--;
+		return *this;
+	}
+	
+	// CLEAR all elements from the vector
+	Vector<T>& clear() {
+		delete [] start;
+		start = new T [mCapacity];
+		next = start;
+		end = start + mCapacity;
+		return *this;
+	}
+	
+	// SORT the elements in this vector
+	Vector<T>& sort(bool ascending=true) {
+		if (ascending) {
+			std::sort(start,start+size());
+		} else {
+			std::sort(start,start+size(), std::greater<int>());
+		}
+		return *this;	
 	}
 
 	// Assignment operator
