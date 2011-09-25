@@ -20,3 +20,5 @@ test.out: testcode.cpp
 clean:
 	rm -f *.o *.out testcode.cpp
 
+valgrind:
+	valgrind --tool=memcheck --leak-check=yes ./vector.out

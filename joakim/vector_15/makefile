@@ -1,8 +1,3 @@
-CC = g++
-FLAGS = -g -Wall
-OBJ = Vector_1.4.o test_vec.o
-PROG = test_vec
-
 %.out:	%.cpp
 	g++ -g -Wall $*.cpp -o $*.out
 
