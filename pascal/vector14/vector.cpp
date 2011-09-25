@@ -21,7 +21,7 @@ public:
 		// Allocate a new array of the appropriate capacity and populate it
 		capacity = copy.size();
 		array = new int [capacity];
-		for (unsigned int i = 0; i < capacity; i++) {
+		for (size_t i = 0; i < capacity; i++) {
 			array[i] = copy[i];
 		}
 	}
@@ -61,7 +61,7 @@ public:
 		// Otherwise copy the rhs array into our own
 		capacity = rhs.size();
 		array = new int [capacity];
-		for (int unsigned i = 0; i < capacity; i++) {
+		for (size_t i = 0; i < capacity; i++) {
 			array[i] = rhs[i];
 		}
 		return *this;
