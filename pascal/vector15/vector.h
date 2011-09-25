@@ -1,11 +1,11 @@
 #include <iostream>
 #include <stdexcept>
-#include <string>
+#include <string.h>
 #include <algorithm>
 
 #define INCREMENT_SIZE 20
 
-template <class T>
+template <typename T>
 class Vector {
 private:
 	T * start;
@@ -13,7 +13,7 @@ private:
 	T * end; 
 	size_t mCapacity;
 
-	// Create a new array with capacity = this->capacity+INCREMENT_SIZE,
+	// Create a new array with capacity = this.capacity+INCREMENT_SIZE,
 	// and copy all our old values into it
 	void expand() {
 		size_t new_capacity = mCapacity + INCREMENT_SIZE;
@@ -37,10 +37,10 @@ private:
 public:
 	// Default constructor -- empty vector
 	Vector<T>() {
-		mCapacity = 0;
-		start = 0;
-		next = 0;
-		end = 0;
+		mCapacity = INCREMENT_SIZE;
+		start = new T [mCapacity];
+		next = start;
+		end = start + mCapacity;
 	}
 
 	// Standard constructor -- elements intialised to T()
@@ -70,7 +70,7 @@ public:
 	// Copy constuctor
 	Vector<T>(const Vector& copy) {
 		// Allocate a new array of the appropriate mCapacity and populate it
-		this->mCapacity = copy.capacity();
+		mCapacity = copy.capacity();
 		start = new T [mCapacity];
 		next = start;
 		size_t size = copy.size();
@@ -153,12 +153,18 @@ public:
 		if (index >= size() || index < 0) {
 			throw std::out_of_range("Out of range!");
 		}
-		// shift all the elements to the right, left by one
-		T * dest = &start[index];
-		T * source = &start[index+1];
-		size_t bytes = (size() - index+1) * sizeof(T);
-		memmove(dest,source,bytes);
-
+		// If last element, just clear the array
+		if (size() == 1) {
+			return clear();
+		}
+		// If it's not the last index, we need to shift
+		if (index != size()-1) {
+			// shift all the elements to the right, left by one
+			T * dest = &start[index];
+			T * source = &start[index+1];
+			size_t bytes = (size() - index+1) * sizeof(T);
+			memmove(dest,source,bytes);	
+		}
 		next--;
 		return *this;
 	}
@@ -177,7 +183,7 @@ public:
 		if (ascending) {
 			std::sort(start,start+size());
 		} else {
-			std::sort(start,start+size(), std::greater<int>());
+			std::sort(std::reverse_iterator<T*>(start+size()),std::reverse_iterator<T*>(start));
 		}
 		return *this;	
 	}
@@ -190,15 +196,15 @@ public:
 		}
 		
 		// Otherwise copy the rhs array into our own
-		this->mCapacity = rhs->capacity();
+		mCapacity = rhs.capacity();
 		start = new T [mCapacity];
 		next = start;
-		size = rhs->size();
+		size_t size = rhs.size();
 		for (size_t i = 0; i < size; i++) {
 			*next = rhs[i];
 			next++;
 		}
-		end = start[mCapacity];
+		end = start + mCapacity;
 		return *this;
 	}
 };
