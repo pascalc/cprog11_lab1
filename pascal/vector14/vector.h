@@ -5,22 +5,14 @@
 
 class Vector {
 public:
-	explicit Vector(unsigned int size);
+	explicit Vector(size_t size);
 	Vector(const Vector& copy);
 	~Vector();
 
-	struct array_proxy {
-		array_proxy(int & r);
-		void operator = (int value);
-		operator int() const;
-		int operator ++ ();
-		int operator ++ (int i);
-	};
-
 	// Functions
-	unsigned int size() const;
-	int operator[](int index) const;
-	array_proxy operator[](int index);
+	size_t size() const;
+	const int& operator[](int index) const;
+	int& operator[](int index);
 	Vector& operator=(const Vector& rhs);
 };
 #endif
