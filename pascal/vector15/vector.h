@@ -1,87 +1,142 @@
 #include <iostream>
 #include <stdexcept>
 
+#define INCREMENT_SIZE 20
+
 template <class T>
 class Vector {
 private:
-	// Internal 'backbone' array
-	T * array;
-	unsigned int capacity;
+	T * start;
+	T * next;
+	T * end; 
+	size_t mCapacity;
+
+	// Create a new array with capacity = this->capacity+INCREMENT_SIZE,
+	// and copy all our old values into it
+	void expand() {
+		size_t new_capacity = mCapacity + INCREMENT_SIZE;
+		T * new_start = new T [new_capacity];
+		T * new_next = new_start;
+		for (size_t i = 0; i < size(); i++) {
+			*new_next = start[i];
+			new_next++;
+		}
+		T * new_end = new_start + new_capacity;
+
+		delete [] start;
+
+		start = new_start;
+		next = new_next;
+		end = new_end;
+		mCapacity = new_capacity;
+	}	
+
 
 public:
-	struct array_proxy {
-		T & ref;
-		array_proxy(T & r) : ref(r) {}
-		void operator = (T value) {
-			ref = value;
-		}
-		operator T() const{
-			return ref;
-		}
-		// Prefix ++
-		// int operator ++ () {
-		// 	return ++ref;
-		// }
-		// // Postfix ++
-		// int operator ++ (T i) {
-		// 	return ref++;
-		// }
-	};
+	// Default constructor -- empty vector
+	Vector<T>() {
+		mCapacity = 0;
+		start = 0;
+		next = 0;
+		end = 0;
+	}
 
-	// Standard constructor
-	explicit Vector<T>(unsigned int initial_size) {
-		capacity = initial_size;
-		array = new T [initial_size];
+	// Standard constructor -- elements intialised to T()
+	explicit Vector<T>(size_t initial_size) {
+		mCapacity = 2*initial_size;
+		start = new T [mCapacity];
+		next = start;
+		for (size_t i = 0; i < initial_size; i++) {
+			*next = T();
+			next++;
+		}
+		end = start + mCapacity;
+	}
+
+	// Standard constructor -- elements intialised to T initial_value
+	explicit Vector<T>(size_t initial_size, T initial_value) {
+		mCapacity = 2*initial_size;
+		start = new T [mCapacity];
+		next = start;
+		for (size_t i = 0; i < initial_size; i++) {
+			*next = initial_value;
+			next++;
+		}
+		end = start + mCapacity;
 	}
 
 	// Copy constuctor
 	Vector<T>(const Vector& copy) {
-		// Allocate a new array of the appropriate capacity and populate it
-		capacity = copy.size();
-		array = new T [capacity];
-		for (unsigned int i = 0; i < capacity; i++) {
-			array[i] = copy[i];
+		// Allocate a new array of the appropriate mCapacity and populate it
+		this->mCapacity = copy.capacity();
+		start = new T [mCapacity];
+		next = start;
+		size_t size = copy.size();
+		for (size_t i = 0; i < size; i++) {
+			*next = copy[i];
+			next++;
 		}
+		end = start + mCapacity;
 	}
 
 	// Deconstructor
 	~Vector<T>() {
-		delete [] array;
+		delete [] start;
 	}
 
-	// Return the capacity of this Vector
-	unsigned int size() const {
-		return capacity;
+	// Return the current size of this Vector
+	size_t size() const {
+		return next-start;
+	}
+
+	// Return the current capacity of this Vector
+	size_t capacity() const {
+		return mCapacity;
 	}
 
 	// Read operator
-	T operator[](unsigned int index) const{
-		if (index >= capacity || index < 0) {
+	const T& operator[](unsigned int index) const {
+		if (index >= size() || index < 0) {
 			throw std::out_of_range("Out of range!");
 		}
-		return array[index];	
+		return start[index];	
 	}
-	// Write via array_proxy
-	array_proxy operator[](unsigned int index) {
-		if (index >= capacity || index < 0) {
+	
+	// Write operator
+	T& operator[](unsigned int index) {
+		if (index >= size() || index < 0) {
 			throw std::out_of_range("Out of range!");
 		}
-		return array_proxy(array[index]);	
+		return start[index];	
+	}
+
+	// Append to the vector
+	T push_back(T element) {
+		if (next == end) {
+			expand();
+		} 
+		*next = element;
+		next++;	
+		return element;	
 	}
 
 	// Assignment operator
 	Vector<T>& operator=(const Vector<T>& rhs) {
 		// Trivial case, v1 = v1
-		// if (this == rhs) {
-		// 	return *this;
-		// }
+		if (this == &rhs) {
+			return *this;
+		}
 		
 		// Otherwise copy the rhs array into our own
-		capacity = rhs.size();
-		array = new T [capacity];
-		for (int unsigned i = 0; i < capacity; i++) {
-			array[i] = rhs[i];
+		this->mCapacity = rhs->capacity();
+		start = new T [mCapacity];
+		next = start;
+		size = rhs->size();
+		for (size_t i = 0; i < size; i++) {
+			*next = rhs[i];
+			next++;
 		}
+		end = start[mCapacity];
 		return *this;
 	}
 };

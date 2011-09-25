@@ -1,4 +1,4 @@
-%.out:	%.cpp
+%.out:	%.cpp %.h
 	g++ -g -Wall $*.cpp -o $*.out
 
 test_vec:
