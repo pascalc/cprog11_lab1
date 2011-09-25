@@ -4,6 +4,12 @@
 #include <stdlib.h>
 
 class Vector {
+private:
+	private:
+	// Internal 'backbone' array
+	int * array;
+	size_t capacity;
+
 public:
 	explicit Vector(size_t size);
 	Vector(const Vector& copy);
@@ -11,8 +17,8 @@ public:
 
 	// Functions
 	size_t size() const;
-	const int& operator[](int index) const;
-	int& operator[](int index);
+	const int& operator[](unsigned int index) const;
+	int& operator[](unsigned int index);
 	Vector& operator=(const Vector& rhs);
 };
 #endif
