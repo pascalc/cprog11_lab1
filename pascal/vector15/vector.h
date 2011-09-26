@@ -158,12 +158,12 @@ public:
 			return clear();
 		}
 		// If it's not the last index, we need to shift
-		if (index != size()-1) {
+		if (index < size()-1) {
 			// shift all the elements to the right, left by one
-			T * dest = &start[index];
-			T * source = &start[index+1];
-			size_t bytes = (size() - index+1) * sizeof(T);
-			memmove(dest,source,bytes);	
+			T * dest = start + index;
+			T * source = start + index + 1;
+			size_t bytes = (size() - (index + 1)) * sizeof(T);
+			memmove(dest,source,bytes);
 		}
 		next--;
 		return *this;
@@ -171,10 +171,7 @@ public:
 	
 	// CLEAR all elements from the vector
 	Vector<T>& clear() {
-		delete [] start;
-		start = new T [mCapacity];
 		next = start;
-		end = start + mCapacity;
 		return *this;
 	}
 	
