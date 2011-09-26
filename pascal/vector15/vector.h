@@ -3,7 +3,7 @@
 #include <string.h>
 #include <algorithm>
 
-#define INCREMENT_SIZE 20
+#define INCREMENT_SIZE 100
 
 template <typename T>
 class Vector {
@@ -127,13 +127,16 @@ public:
 				expand();	
 			}
 			// shift all the elements to the right, right by one
-			T * dest = &start[index+1];
-			T * source = &start[index];
-			size_t bytes = (size() - index) * sizeof(T);
-			memmove(dest,source,bytes);
-
-			start[index] = element;
+			size_t j = size()-1;
+			while(true) {
+				T tmp = start[j];
+				start[j+1] = tmp;
+				if(j == index)
+					break;
+				j--;
+			}
 			next++;
+			start[index] = element;
 		}
 		return *this;
 	}
@@ -160,10 +163,10 @@ public:
 		// If it's not the last index, we need to shift
 		if (index < size()-1) {
 			// shift all the elements to the right, left by one
-			T * dest = start + index;
-			T * source = start + index + 1;
-			size_t bytes = (size() - (index + 1)) * sizeof(T);
-			memmove(dest,source,bytes);
+			for (size_t i = index+1; i < size(); i++) {
+				T tmp = start[i];
+				start[i-1] = tmp;
+			}
 		}
 		next--;
 		return *this;
