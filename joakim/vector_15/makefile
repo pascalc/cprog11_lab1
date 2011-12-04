@@ -6,10 +6,12 @@ cxxtestpath = ../../../cxxtest/
 testcode    = test_vec.h
 test_file	= vector.h
 
-testcode.cpp: $(testcode)
-	$(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
+#testcode.cpp: $(testcode)
+#	$(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
 
-test.out: testcode.cpp
+test.out: $(testcode.cpp)
+	g++ -c $(test_file)
+	$(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
 	g++ -o test.out -I $(cxxtestpath) testcode.cpp $(test_file)
 
 clean:

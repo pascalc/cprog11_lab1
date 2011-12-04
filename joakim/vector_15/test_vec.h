@@ -16,6 +16,24 @@ public:
 
     void testInsertion( void ) {
         cout << "\ntestInsertion" << endl;
+        cout << "\tempty vector<int> insert and push back\n";
+        Vector<int> a;
+        a.insert(0, 1);
+        TS_ASSERT_EQUALS(a[0], 1);
+        a.insert(0, 2);
+        TS_ASSERT_EQUALS(a[0], 2);
+        TS_ASSERT_EQUALS(a[1], 1);
+        a.insert(5, 3);
+        TS_ASSERT_EQUALS(a[2], 3);
+        a.clear();
+        TS_ASSERT_EQUALS(a.size(), 0);
+        a.push_back(1);
+        TS_ASSERT_EQUALS(a[0], 1);
+        a.push_back(2);
+        TS_ASSERT_EQUALS(a[1], 2);
+        TS_ASSERT_EQUALS(a[0], 1);
+
+        cout << "\tvector<double> initial size ten\n";
         Vector<double> d(10);
         try {
             TS_ASSERT_EQUALS(d.size(), 10);
@@ -67,21 +85,25 @@ public:
         Vector<int> ivec;
         try 
         {
-            for(int i = 0; i < 10; i++)
-                ivec.insert(9-i, i);
+            for(size_t i = 0; i < 10; i++)
+                ivec.insert((9-i), i);
         } catch (std::out_of_range e) {
             cout << e.what() << endl;
         }
         cout << "[";
+        for(size_t i = 0; i < ivec.size(); i++) {
+                cout << "ivec[" << i << "] = " << ivec[i] << ", ";
+            }
+        cout << "]\n";
         try {
             for(size_t i = 0; i < ivec.size(); i++) {
-                //cout << ivec[i] << ", ";
-                TS_ASSERT_EQUALS(ivec[i], 9-i)
+                //cout << "ivec[" << i << "] = " << ivec[i] << ", ";
+                TS_ASSERT_EQUALS(ivec[i], (9-i));
             }
         } catch (std::out_of_range e) {
             cout << e.what() << endl;
         }
-        cout << "]" << endl;
+        //cout << "]" << endl;
     }
 
     void testErase( void ) {
