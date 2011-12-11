@@ -16,11 +16,11 @@ class Vector<bool> {
 	std::size_t m_size;
 	Vector<bit_container> m_data;
 
-	static std::size_t nr_containers(std::size_t) const;
-	static std::size_t index2byte(index) const; // MOve to proxy?
+	static std::size_t size2containers(std::size_t) const;
+	static std::size_t index2container(index) const; // Move to proxy?
 	static std::size_t index2bit(index) const; // Move to proxy?
 
-	void check_range(index) const throw std::out_of_range("Index out of range");
+	void check_range(index) const; // throw std::out_of_range("Index out of range");
 
 	struct proxy {
 		friend class Vector<bool>;
@@ -33,9 +33,15 @@ class Vector<bool> {
 			m_bit(bit) { }
 		
 		public:
-			bool operator=(bool value) {
+			proxy& operator=(bool value) {
 				m_container = 
 				return true;
+			}
+			/*
+			m_container = 1001 1000[2] (152[10]), m_bit = 5 
+			*/
+			bool operator() const {
+				return (m_container >> (m_bit-1) ) & 1;
 			}
 
 	};
@@ -47,11 +53,11 @@ public:
 
 	explicit Vector<bool>(std::size_t size) :
 		m_size(size),
-		m_data(nr_containers(size)) {}
+		m_data(size2containers(size)) {}
 
 	explicit Vector<bool>(std::size_t size, bool initial_value) :
 		m_size(size),
-		m_data(nr_containers(size), initial_value ? ALL_BITS_INT : 0) {}
+		m_data(size2containers(size), initial_value ? ALL_BITS_INT : 0) {}
 
 	Vector<bool>(const Vector& copy) : 
 		m_size(copy.size()),
@@ -59,28 +65,29 @@ public:
 	
 	~Vector<bool>() {}
 
-	Vecto<bool>& operator=(const Vector&);
-	const proxy& operator[](index) const;
-	proxy& operator[](index);
+	/** reading **/
+	const operator[](index) const;
 	std::size_t size() const;
+
+	/** writing **/
+	Vecto<bool>& operator=(const Vector&); 
+	proxy& operator[](index);
 	Vector<bool>& push_back(bool);
-	Vector<bool>& insert(index, bool);
-	bool pop_back(bool);
 	void clear();
 };
 
 #endif
 
-static std::size_t Vector<bool>::nr_containers(std::size_t size) const {
+static std::size_t Vector<bool>::size2containers(std::size_t size) const {
 	return (size / NR_BITS_INT) + 1;
 }
 
-static std::size_t Vector<bool>::index2byte(index i) const {
+static std::size_t Vector<bool>::index2container(index i) const {
 	return i / NR_BITS_INT;
 }
 
 static std::size_t Vector<bool>::index2bit(index i) const {
-	return i % NR_BITS_INT;
+	return i % NR_BITS_INT; // (i+1)?
 }
 
 
@@ -96,13 +103,14 @@ Vector<bool>& Vector<bool>::operator=(const Vector<bool>& rhs) {
 	return *this;
 }
 
-const Vector<bool>::proxy& Vector<bool>::operator[](index i) const {
+const bool Vector<bool>::operator[](index i) const {
 	check_range(i);
-
+	return proxy(m_data[index2container(i)], index2bit(i))();
 }
 
 Vector<bool>::proxy& Vector<bool>::operator[](index i) {
 	check_range(i);
+	return proxy(m_data[index2container(i)], index2bit(i));
 }
 
 std::size_t vector<bool>::size() const {
@@ -110,20 +118,15 @@ std::size_t vector<bool>::size() const {
 }
 
 vector<bool>& Vector<bool>& push_back(bool elem) {
+	++size;
+	if(size % NR_BITS_INT == 0) {
+		m_data.push_back(0);
+	}
+	(*this)[size-1] = elem;
 	return *this;
-}
-
-vector<bool>& Vector<bool>& insert(index i, bool elem) {
-	check_range(i);
-	return *this;
-}
-
-bool Vector<bool>::pop_back() {
-	if(m_size == 0) throw std::out_of_range("Error! Empty vector")
-	return (*this)[--m_size];
 }
 
 void Vector<bool>::clear() {
-	m_data.clear();
 	m_size = 0;
+	m_data.clear();
 }
