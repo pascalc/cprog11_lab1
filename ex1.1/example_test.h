@@ -2,7 +2,7 @@
 #define MATRIX_TEST_H_INCLUDED
 
 #include "Matrix.h"
-#include "/home/joacar/Documents/kth/kurser/ht11/cprog11/cprog11_lab1/cxxtest/cxxtest/TestSuite.h"
+#include "../../cxxtest/cxxtest/TestSuite.h"
 #include <fstream>
 #include <sstream>
 
@@ -12,6 +12,14 @@ class MatrixTestSuite : public CxxTest::TestSuite
     Matrix a_matrix_3by2() {    // [ 1 3 5 ]
         Matrix m;               // [ 0 2 0 ]
         std::stringstream s("  [ 1 3 5 ; 0 2 0 ]");
+        s >> m;
+        return m;
+    }
+
+    Matrix a_matrix_2by3() {    // [ 1 3 ]
+        Matrix m;               // [ 5 0 ]
+                                // [ 2 0 ]
+        std::stringstream s("  [ 1 3; 5 0; 2 0 ]");
         s >> m;
         return m;
     }
@@ -38,6 +46,28 @@ public:
         ss << m;
         ss >> m;
         TS_ASSERT( m[ 0 ][ 0 ] == 1 );
+    }
+
+    void testAddAndSub() {
+
+    }
+
+    void testMtrxMult() {
+        // Correct multiplication 
+        Matrix A, B, res(2,2);
+        // [ 26 10 ]
+        // [ 3 0 ]
+
+        A = a_matrix_3by2();
+        B = a_matrix_2by3();
+        Matrix C(A*B);
+    }
+
+    void testScalarMult() {
+        Matrix A(3);
+        int k = 4;
+        Matrix ans(k*A);
+        TS_ASSERT(ans[0][0] == k && ans[1][1] == k && ans[2][2] == k); 
     }
 };
 

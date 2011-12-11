@@ -21,6 +21,9 @@ public:
     Matrix(std::size_t size);   // changed from int to std::size_t
     ~Matrix( );
 
+    Matrix(int size);   // Obsolete
+
+
     friend std::ostream& operator<<(std::ostream&, const Matrix&);
     
     Matrix& operator= ( const Matrix& );
@@ -35,8 +38,8 @@ public:
     matrix_row& operator[]( index i );
     const matrix_row& operator[]( index i ) const;
     
-    inline std::size_t rows() { return m_rows; } const;
-    inline std::size_t cols() { return m_cols; } const;
+    std::size_t rows() const;
+    std::size_t cols() const;
     
  protected:
  private:
@@ -44,12 +47,11 @@ public:
     std::size_t                 m_rows;
     std::size_t                 m_cols;
     
-    bool validate(const Matrix&) const;
+    void validate(const Matrix&) const;
     int add(int, int) const;
     int sub(int, int) const;
-    Matrix m_iterator(const Matrix&, (int)(Matrix::operator*)(int, int));
-    Matrix m_iterator(const Matrix&, int);
-
+    Matrix m_iterator(const Matrix&, int (*function)(int, int));
+    Matrix m_iterator(const Matrix&, int k );
 
     friend std::istream& operator>> ( std::istream&, const Matrix& );
 };
