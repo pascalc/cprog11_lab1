@@ -1,7 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <cxxtest/TestSuite.h>
-#include "../ex1.1/vector.h"     // inkludera din headerfil här
+
+#include "bool_vector.h"     // inkludera din headerfil här
 
 class MyTestSuite : public CxxTest::TestSuite 
 {
@@ -55,14 +56,17 @@ public:
         } catch(std::out_of_range ) {}
     }
 
+    #if 0
     void testConst( void ) {
         const Vector<bool> v(7);
         bool i = v[5];   
         v[6] = false;   // Compile error = ?
     }
+    
 
     void testSelfAssignment( void ) {
         Vector<bool> b;
-        b = b;
+        b = b;      // memory leakage?
     }
+    #endif
 };
