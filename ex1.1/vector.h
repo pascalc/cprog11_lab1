@@ -36,14 +36,18 @@ private:
 
 public:
 	// Default constructor -- empty vector
-	Vector<T>() 
-		: mCapacity(INITIAL_SIZE), start( new T [mCapacity]()), next(start), end(start+mCapacity)	
-	{
-	}
+	Vector<T>() : 
+		mCapacity(INITIAL_SIZE), 
+		start( new T[mCapacity]() ), 
+		next(start), 
+		end(start+mCapacity) { }
 
 	// Standard constructor -- elements intialised to T()
-	explicit Vector<T>(size_t initial_size) 
-		: mCapacity(2*initial_size), start( new T [mCapacity]()), next(start), end(start+mCapacity)	
+	explicit Vector<T>(size_t initial_size) : 
+		mCapacity(2*initial_size), 
+		start( new T[mCapacity]() ), 
+		next(start), 
+		end(start+mCapacity)	
 	{
 		for (size_t i = 0; i < initial_size; i++) {
 			*next = T();
@@ -52,8 +56,11 @@ public:
 	}
 
 	// Standard constructor -- elements intialised to T initial_value
-	explicit Vector<T>(size_t initial_size, T initial_value) 
-		: mCapacity(2*initial_size), start( new T [mCapacity]()), next(start), end(start+mCapacity)	
+	explicit Vector<T>(size_t initial_size, T initial_value) : 
+		mCapacity(2*initial_size),
+		start( new T[mCapacity]() ),
+		next(start),
+		end(start+mCapacity)	
 	{
 		for (size_t i = 0; i < initial_size; i++) {
 			*next = initial_value;
@@ -62,8 +69,11 @@ public:
 	}
 
 	// Copy constuctor
-	Vector<T>(const Vector& copy) 
-		: mCapacity(copy.capacity), start( new T[mCapacity]()), next(start), end(start+mCapacity)	
+	Vector<T>(const Vector<T>& copy) : 
+		mCapacity(copy.capacity), 
+		start( new T[mCapacity]()), 
+		next(start), 
+		end(start+mCapacity)	
 	{
 		// Allocate a new array of the appropriate mCapacity and populate it
 		size_t size = copy.size();
