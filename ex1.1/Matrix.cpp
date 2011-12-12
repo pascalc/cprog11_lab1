@@ -62,6 +62,16 @@ Matrix& Matrix::operator=(const Matrix& matrix) {
     return *this;
 }
 
+bool Matrix::operator==(const Matrix& rhs) {
+    if(m_rows != rhs.rows() || m_cols != rhs.cols()) return false;
+    for(size_t row = 0; row < m_rows; ++row) {
+        for(size_t col = 0; col < m_cols; ++col) {
+            if((*this)[row][col] != rhs[row][col]) return false;
+        }
+    }
+    return true;
+}
+
 /*****/
 inline void Matrix::validate(const Matrix& m) const { 
     if(m.rows() != m_rows || m.cols() != m_cols)
