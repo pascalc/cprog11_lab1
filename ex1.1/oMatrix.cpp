@@ -55,12 +55,12 @@ Matrix& Matrix::operator=(const Matrix& m) {
     return *this;
 }
 
-/*
+
 void Matrix::validate(const Matrix& m) const { 
     if(m.rows() != m_rows || m.cols() != m_cols)
         throw std::logic_error("Matrix dimensions must agree");
 }
-
+/*
 int Matrix::add(int a, int b) const { return a+b; }
 int Matrix::sub(int a, int b) const { return a-b; }
 
@@ -78,9 +78,7 @@ Matrix Matrix::m_iterator(const Matrix& m, int (*ptr2operator)(int, int) ) {
 
 Matrix Matrix::operator+(const Matrix& m) const { 
     //return m_iterator(m, &add);
-    //validate(m);
-    if(m.rows() != m_rows || m.cols() != m_cols)
-        throw std::logic_error("Matrix dimensions must agree");
+    validate(m);
     Matrix res(*this);
     for(size_t r = 0; r < m_rows; ++r)
         for(size_t c = 0; c < m_cols; ++c)
@@ -89,10 +87,7 @@ Matrix Matrix::operator+(const Matrix& m) const {
 
 Matrix Matrix::operator-(const Matrix& m) const {
     //return m_iterator(m, &sub);
-    //validate(m);
-    if(m.rows() != m_rows || m.cols() != m_cols)
-        throw std::logic_error("Matrix dimensions must agree");
-        
+    validate(m);
     Matrix res(*this);
     for(size_t r = 0; r < m_rows; ++r)
         for(size_t c = 0; c < m_cols; ++c)
@@ -188,7 +183,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)  {
 // TODO
 // Input. 3x3 matrix = [1 2 3; 4 5 6; 7 8 9]
 std::istream& operator>>(std::istream& is, Matrix& m) {
-    if(is.get() != ']') throw std::invalid_argument("Invalid input. Expected ']'");
+    if(is.get() != '[') throw std::invalid_argument("Invalid input. Expected '['");
 
     size_t rows = 0, cols = 0;
     std::string input, row;
@@ -218,4 +213,8 @@ Matrix::Matrix(int size) :
 {
     for(int i = 0; i < m_rows; ++i)
             (*this)[i][i] = 1;
+}
+
+std::ostream& operator<<(std::ostream& os, Matrix& m) {
+    return os << static_cast<const Matrix&>(m);
 }
