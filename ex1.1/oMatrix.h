@@ -47,11 +47,10 @@ public:
     std::size_t                 m_rows;
     std::size_t                 m_cols;
     
-    void validate(const Matrix&) const;
-    int add(int, int) const;
-    int sub(int, int) const;
-    Matrix m_iterator(const Matrix&, int (*function)(int, int));
-    Matrix m_iterator(const Matrix&, int k );
+    //void validate(const Matrix&) const;
+    //int add(int, int) const;
+    //int sub(int, int) const;
+    //Matrix m_iterator(const Matrix&, int (*function)(int, int));
 
     friend std::istream& operator>> ( std::istream&, const Matrix& );
 };

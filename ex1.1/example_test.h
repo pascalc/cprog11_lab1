@@ -38,7 +38,7 @@ public:
         TS_ASSERT(a.rows() == 0 && a.cols() == 0);
         // Explicit constructor
         Matrix b(3);
-        TS_ASSERT(b == init_matrix("[ 1 0 0 ; 0 1 0; 0 0 1 ]") );
+        check_equal(b, init_matrix("[ 1 0 0 ; 0 1 0; 0 0 1 ]") );
         Matrix c(1);
         TS_ASSERT(c[0][0] == 1);
         // Constructur two arguments
@@ -117,7 +117,7 @@ public:
         char* result = {"[ 2 4 6 ; 0 4 0 ; 0 0 2 ]"};
         Matrix d = init_matrix(square);
         Matrix e = d + d;
-        check_equal(e, init_matrix(result))
+        check_equal(e, init_matrix(result));
 
         // Test adding matrices with wrong dimensions
         Matrix f(3);
@@ -139,7 +139,7 @@ public:
         char* result = {"[ 0 0 0 ; 0 0 0 ; 0 0 0 ]"};
         Matrix d = init_matrix(square);
         Matrix e = d - d;
-        check_equal(e, init_matrix(result))
+        check_equal(e, init_matrix(result));
 
         // Test subtracting matrices with wrong dimensions
         Matrix f(3);
