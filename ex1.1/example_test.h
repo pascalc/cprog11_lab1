@@ -17,14 +17,6 @@ class MatrixTestSuite : public CxxTest::TestSuite
         return init_matrix(matrix_3by2_transpose);
     }
 
-    static const char* matrix_3by2 = {"  [ 1 3 5 ; 0 2 0 ]"};
-    static const char* matrix_3by2_transpose = {"  [ 1 0; 3 2; 2 0 ]"};
-    
-    static const char* matrix_3by3_identity = {"[ 1 0 0 ; 0 1 0; 0 0 1 ]"};
-    static const char* matrix_3by3 = {"[ 1 2 3 ; 0 2 0 ; 0 0 1 ]"};
-    static const char* matrix_3by3_negation = {"[ -1 -2 -3 ; 0 -2 0 ; 0 0 -1 ]"};
-    static const char* matrix_3by3_tranpose = {"[ 1 0 0 ; 2 2 0 ; 3 0 1 ]"};
-
     Matrix init_matrix(const char* m_str) {
         Matrix m;
         std::stringstream s(m_str);
@@ -46,7 +38,7 @@ public:
         TS_ASSERT(a.rows() == 0 && a.cols() == 0);
         // Explicit constructor
         Matrix b(3);
-        TS_ASSERT(b == init_matrix(matrix_3by3_identity) );
+        TS_ASSERT(b == init_matrix("[ 1 0 0 ; 0 1 0; 0 0 1 ]") );
         Matrix c(1);
         TS_ASSERT(c[0][0] == 1);
         // Constructur two arguments
@@ -63,7 +55,7 @@ public:
         TS_ASSERT(b.rows() == 0 && b.cols() == 0);
 
         // Copy non-empty vectors via copy constructor and assignment operator
-        Matrix c = init_matrix(matrix_3by2);
+        Matrix c = init_matrix("  [ 1 3 5 ; 0 2 0 ]");
         Matrix d(c);
         TS_ASSERT(d == c);
         Matrix h = d;
@@ -114,7 +106,7 @@ public:
     void test_addition() {
         //Test valid addition
         // Test non-square
-        Matrix a = init_matrix(matrix_3by2);
+        Matrix a = init_matrix("  [ 1 3 5 ; 0 2 0 ]");
         Matrix b = a;
         Matrix c = a + b;
         TS_ASSERT(c[0][0] == 2 && c[0][1] == 6 &&c[0][2] == 10
@@ -136,7 +128,7 @@ public:
         // Test valid subtraction
 
         // Test non-square
-        Matrix a = init_matrix(matrix_3by2);
+        Matrix a = init_matrix("  [ 1 3 5 ; 0 2 0 ]");
         Matrix b = a;
         Matrix c = a - b;
         TS_ASSERT(c[0][0] == 0 && c[0][1] == 0 &&c[0][2] == 0
@@ -189,7 +181,8 @@ public:
     }
 
     void test_transposeRectangular() {
-        Matrix a = a_matrix_3by2(), aT = a_matrix_2by3();
+        Matrix a = a_matrix_3by2();
+        Matrix aT = a_matrix_2by3();
         a.transpose();
         TS_ASSERT(a == aT);
     }
@@ -204,8 +197,8 @@ public:
         char* res1 = {"[ -1 0 ; 0 -1]"};
         Matrix a(2);
         TS_ASSERT(-a == init_matrix(res1));
-            
     }
+    
 };
 #endif
 
