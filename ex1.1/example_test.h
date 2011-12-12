@@ -10,11 +10,11 @@ class MatrixTestSuite : public CxxTest::TestSuite
 {
 
     Matrix a_matrix_3by2() {
-        return init_matrix(matrix_3by2);
+        return init_matrix("  [ 1 3 5 ; 0 2 0 ]");
     }
 
     Matrix a_matrix_2by3() {
-        return init_matrix(matrix_3by2_transpose);
+        return init_matrix("  [ 1 0 ; 3 2 ; 5 0 ]");
     }
 
     Matrix init_matrix(const char* m_str) {
@@ -81,8 +81,8 @@ public:
 
     void test_setIndexOperator() {
         Matrix a(3);
-        for(std::size_t r = 0; i < a.rows(); ++r) {
-            for(std::size_t c = 0; i < a.cols(); ++c) {
+        for(std::size_t r = 0; r < a.rows(); ++r) {
+            for(std::size_t c = 0; c < a.cols(); ++c) {
                 a[r][c] = r + c;
                 TS_ASSERT(a[r][c] == (r+c) );
             }
@@ -96,8 +96,8 @@ public:
         b[2][0] = 5;
         b[2][1] = 6;
         std::size_t i = 1;
-        for(std::size_t r = 0; i < b.rows(); ++r) {
-            for(std::size_t c = 0; i < b.cols(); ++c) {
+        for(std::size_t r = 0; r < b.rows(); ++r) {
+            for(std::size_t c = 0; r < b.cols(); ++c) {
                 TS_ASSERT(b[r][c] == i++ );
             }
         }
@@ -142,8 +142,8 @@ public:
         TS_ASSERT(e == init_matrix(result))
 
         // Test subtracting matrices with wrong dimensions
-        Matrix d(3);
-        TS_ASSERT_THROWS_ANYTHING(Matrix e = d - a);
+        Matrix f(3);
+        TS_ASSERT_THROWS_ANYTHING(Matrix e = f - a);
     }
 
     void test_matrixMult() {
@@ -177,7 +177,7 @@ public:
         ans = -4*a;
         TS_ASSERT(ans[0][0] == -4 && ans[0][1] == -12 
                     && ans[1][0] == -20 && ans[1][1] == 0
-                    && ans[2][0] == -8 && ans[2][1] == 0 &&);
+                    && ans[2][0] == -8 && ans[2][1] == 0);
     }
 
     void test_transposeRectangular() {
