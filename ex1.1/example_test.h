@@ -112,24 +112,43 @@ public:
     }
 
     void test_addition() {
-        // Test valid addition
+        //Test valid addition
+        // Test non-square
         Matrix a = init_matrix(matrix_3by2);
         Matrix b = a;
         Matrix c = a + b;
         TS_ASSERT(c[0][0] == 2 && c[0][1] == 6 &&c[0][2] == 10
                     && c[1][0] == 0 && c[1][1] == 4 && c[1][2] == 0);
+
+        // Test square
+        char* square = {"[ 1 2 3 ; 0 2 0 ; 0 0 1 ]"};
+        char* result = {"[ 2 4 6 ; 0 4 0 ; 0 0 2 ]"};
+        Matrix d = init_matrix(square);
+        Matrix e = d + d;
+        TS_ASSERT(e == init_matrix(result))
+
         // Test adding matrices with wrong dimensions
-        Matrid d(3);
-        TS_ASSERT_THROWS_ANYTHING(Matrix e = d + a);
+        Matrid f(3);
+        TS_ASSERT_THROWS_ANYTHING(Matrix e = f + a);
     }
 
     void test_subtraction() {
         // Test valid subtraction
+
+        // Test non-square
         Matrix a = init_matrix(matrix_3by2);
         Matrix b = a;
         Matrix c = a - b;
         TS_ASSERT(c[0][0] == 0 && c[0][1] == 0 &&c[0][2] == 0
                     && c[1][0] == 0 && c[1][1] == 0 && c[1][2] == 0);
+        
+        // Test square
+        char* square = {"[ 1 2 3 ; 0 2 0 ; 0 0 1 ]"};
+        char* result = {"[ 0 0 0 ; 0 0 0 ; 0 0 0 ]"};
+        Matrix d = init_matrix(square);
+        Matrix e = d - d;
+        TS_ASSERT(e == init_matrix(result))
+
         // Test subtracting matrices with wrong dimensions
         Matrid d(3);
         TS_ASSERT_THROWS_ANYTHING(Matrix e = d - a);
