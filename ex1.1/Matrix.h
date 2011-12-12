@@ -44,8 +44,7 @@ class Matrix
     Matrix operator* ( int ) const;
     Matrix operator-( const Matrix& ) const;
     Matrix operator-( ) const;
-    bool operator==(const Matrix&) const;
-
+    
     Matrix& transpose( );
     
     matrix_row& operator[]( index i );

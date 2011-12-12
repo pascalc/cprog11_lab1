@@ -57,9 +57,9 @@ public:
         // Copy non-empty vectors via copy constructor and assignment operator
         Matrix c = init_matrix("  [ 1 3 5 ; 0 2 0 ]");
         Matrix d(c);
-        TS_ASSERT(d == c);
+        check_equal(c, d);
         Matrix h = d;
-        TS_ASSERT(h == d); 
+        check_equal(h, d);
     }
 
     void test_indexOperator ( ) {
@@ -117,7 +117,7 @@ public:
         char* result = {"[ 2 4 6 ; 0 4 0 ; 0 0 2 ]"};
         Matrix d = init_matrix(square);
         Matrix e = d + d;
-        TS_ASSERT(e == init_matrix(result))
+        check_equal(e, init_matrix(result))
 
         // Test adding matrices with wrong dimensions
         Matrix f(3);
@@ -139,7 +139,7 @@ public:
         char* result = {"[ 0 0 0 ; 0 0 0 ; 0 0 0 ]"};
         Matrix d = init_matrix(square);
         Matrix e = d - d;
-        TS_ASSERT(e == init_matrix(result))
+        check_equal(e, init_matrix(result))
 
         // Test subtracting matrices with wrong dimensions
         Matrix f(3);
@@ -153,7 +153,7 @@ public:
         Matrix a = a_matrix_3by2();
         Matrix b = a_matrix_2by3();
         Matrix c = a*b;
-        TS_ASSERT(c == init_matrix(result));
+        check_equal(c, init_matrix(result));
         
         // Wrong dimensions
         Matrix d(3);
@@ -184,19 +184,31 @@ public:
         Matrix a = a_matrix_3by2();
         Matrix aT = a_matrix_2by3();
         a.transpose();
-        TS_ASSERT(a == aT);
+        check_equal(a, aT);
     }
 
     void test_transposeSquare() {
         Matrix a(10);
         a.transpose();
-        TS_ASSERT(a == a);
+        check_equal(a, a);
     }
 
     void test_negation() {
         char* res1 = {"[ -1 0 ; 0 -1]"};
         Matrix a(2);
-        TS_ASSERT(-a == init_matrix(res1));
+        check_equal(-a, init_matrix(res1));
+    }
+
+private:
+    void check_equal(const Matrix& m, const Matrix& n) {
+        TS_ASSERT_EQUALS(m.rows(), n.rows());
+        TS_ASSERT_EQUALS(m.cols(), n.cols());
+        
+        for(size_t row = 0; row < m.rows(); ++row) {
+            for(size_t col = 0; col < m.cols(); ++col) {
+                TS_ASSERT_EQUALS(m[row][col], n[row][col]);
+            }
+        }    
     }
 
 };
