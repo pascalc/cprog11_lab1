@@ -9,19 +9,28 @@
 class MatrixTestSuite : public CxxTest::TestSuite
 {
 
-    Matrix a_matrix_3by2() {    // [ 1 3 5 ]
-        Matrix m;               // [ 0 2 0 ]
-        std::stringstream s("  [ 1 3 5 ; 0 2 0 ]");
-        s >> m;
-        return m;
+    Matrix a_matrix_3by2() {
+        return init_matrix(matrix_3by2);
     }
 
-    Matrix a_matrix_2by3() {    // [ 1 3 ]
-        Matrix m;               // [ 5 0 ]
-                                // [ 2 0 ]
-        std::stringstream s("  [ 1 3; 5 0; 2 0 ]");
+    Matrix a_matrix_2by3() {
+        return init_matrix(matrix_3by2_transpose);
+    }
+
+    static const char* matrix_3by2 = {"  [ 1 3 5 ; 0 2 0 ]"};
+    static const char* matrix_3by2_transpose = {"  [ 1 0; 3 2; 2 0 ]"};
+    
+    static const char* matrix_3by3_identity = {"[ 1 0 0 ; 0 1 0; 0 0 1 ]"};
+    static const char* matrix_3by3 = {"[ 1 2 3 ; 0 2 0 ; 0 0 1 ]"};
+    static const char* matrix_3by3_negation = {"[ -1 -2 -3 ; 0 -2 0 ; 0 0 -1 ]"};
+    static const char* matrix_3by3_tranpose = {"[ 1 0 0 ; 2 2 0 ; 3 0 1 ]"};
+
+    Matrix init_matrix(const char* m_str) {
+        Matrix m;
+        std::stringstream s(m_str);
         s >> m;
         return m;
+
     }
 
     void init_matrix( Matrix& m, const char* file )
@@ -31,8 +40,37 @@ class MatrixTestSuite : public CxxTest::TestSuite
     }
 
 public:
-    void testIndexOperator ( )
-    {
+    void test_constructors() {
+        // Default constructor
+        Matrix a;
+        TS_ASSERT(a.rows() == 0 && a.cols() == 0);
+        // Explicit constructor
+        Matrix b(3);
+        TS_ASSERT(b == init_matrix(matrix_3by3_identity) );
+        Matrix c(1);
+        TS_ASSERT(c[0][0] == 1);
+        // Constructur two arguments
+        Matrix d(3, 2);
+        TS_ASSERT(d.rows() == 3 && d.cols() == 2);
+        Matrix e(3,3);
+        TS_ASSERT(e.rows() == 3 && e.cols() == 3);
+    }
+
+    void test_copy() {
+        // Copy default vector via assignment operator
+        Matrix a;
+        Matrix b = a;
+        TS_ASSERT(b.rows() == 0 && b.cols() == 0);
+
+        // Copy non-empty vectors via copy constructor and assignment operator
+        Matrix c = init_matrix(matrix_3by2);
+        Matrix d(c);
+        TS_ASSERT(d == c);
+        Matrix h = d;
+        TS_ASSERT(h == d); 
+    }
+
+    void test_indexOperator ( ) {
         Matrix m( 2, 2 );
         TS_ASSERT( m[ 0 ][ 1 ] == 0 );
 
@@ -41,6 +79,7 @@ public:
 
         init_matrix(m, "  [ 1 3 5 ; 0 2 1 ]");
         TS_ASSERT( m[ 0 ][ 0 ] == 1 );
+        TS_ASSERT(m[2][2] == 1);
 
         std::stringstream ss;
         ss << m;
@@ -48,28 +87,106 @@ public:
         TS_ASSERT( m[ 0 ][ 0 ] == 1 );
     }
 
-    void testAddAndSub() {
+    void test_setIndexOperator() {
+        Matrix a(3);
+        for(std::size_t r = 0; i < a.rows(); ++r) {
+            for(std::size_t c = 0; i < a.cols(); ++c) {
+                a[r][c] = r + c;
+                TS_ASSERT(a[r][c] == (r+c) );
+            }
+        }
 
+        Matrix b(3,2);
+        b[0][0] = 1;
+        b[0][1] = 2;
+        b[1][0] = 3;
+        b[1][1] = 4;
+        b[2][0] = 5;
+        b[2][1] = 6;
+        std::size_t i = 1;
+        for(std::size_t r = 0; i < b.rows(); ++r) {
+            for(std::size_t c = 0; i < b.cols(); ++c) {
+                TS_ASSERT(b[r][c] == i++ );
+            }
+        }
     }
 
-    void testMtrxMult() {
+    void test_addition() {
+        // Test valid addition
+        Matrix a = init_matrix(matrix_3by2);
+        Matrix b = a;
+        Matrix c = a + b;
+        TS_ASSERT(c[0][0] == 2 && c[0][1] == 6 &&c[0][2] == 10
+                    && c[1][0] == 0 && c[1][1] == 4 && c[1][2] == 0);
+        // Test adding matrices with wrong dimensions
+        Matrid d(3);
+        TS_ASSERT_THROWS_ANYTHING(Matrix e = d + a);
+    }
+
+    void test_subtraction() {
+        // Test valid subtraction
+        Matrix a = init_matrix(matrix_3by2);
+        Matrix b = a;
+        Matrix c = a - b;
+        TS_ASSERT(c[0][0] == 0 && c[0][1] == 0 &&c[0][2] == 0
+                    && c[1][0] == 0 && c[1][1] == 0 && c[1][2] == 0);
+        // Test subtracting matrices with wrong dimensions
+        Matrid d(3);
+        TS_ASSERT_THROWS_ANYTHING(Matrix e = d - a);
+    }
+
+    void test_matrixMult() {
+        char* result = {" [ 26 10 ; 3 0 ]"};
+
         // Correct multiplication 
-        Matrix A, B, res(2,2);
-        // [ 26 10 ]
-        // [ 3 0 ]
-
-        A = a_matrix_3by2();
-        B = a_matrix_2by3();
-        Matrix C(A*B);
+        Matrix a = a_matrix_3by2();
+        Matrix b = a_matrix_2by3();
+        Matrix c = a*b;
+        TS_ASSERT(c == init_matrix(result));
+        
+        // Wrong dimensions
+        Matrix d(3);
+        TS_ASSERT_THROWS_ANYTHING(Matrix e = d*b);        
     }
 
-    void testScalarMult() {
-        Matrix A(3);
-        int k = 4;
-        Matrix ans(k*A);
-        TS_ASSERT(ans[0][0] == k && ans[1][1] == k && ans[2][2] == k); 
+    void test_scalarMultiplication() {
+        Matrix a(3);
+        // Test left side
+        Matrix ans = 4*a;
+        TS_ASSERT(ans[0][0] == 4 && ans[0][1] == 0 && ans[0][2] == 0
+                    && ans[1][0] == 0 && ans[1][1] == 4 && ans[1][2] == 0
+                    && ans[2][0] == 0 && ans[2][1] == 0 && ans[2][2] == k);
+        // Test right side
+        a = a_matrix_3by2();
+        ans = a*4;
+        TS_ASSERT(ans[0][0] == 4 && ans[0][1] == 12 && ans[0][2] == 20
+                    && ans[1][0] == 0 && ans[1][1] == 8 && ans[1][2] == 0);
+        // Test negative scalar multiplication
+        a = a_matrix_2by3();
+        ans = -4*a;
+        TS_ASSERT(ans[0][0] == -4 && ans[0][1] == -12 
+                    && ans[1][0] == -20 && ans[1][1] == 0
+                    && ans[2][0] == -8 && ans[2][1] == 0 &&);
+    }
+
+    void test_transposeRectangular() {
+        Matrix a = a_matrix_3by2(), aT = a_matrix_2by3();
+        a.transpose();
+        TS_ASSERT(a == aT);
+    }
+
+    void test_transposeSquare() {
+        Matrix a(10);
+        a.transpose();
+        TS_ASSERT(a == a);
+    }
+
+    void test_negation() {
+        char* res1 = {"[ -1 0 ; 0 -1]"};
+        Matrix a(2);
+        TS_ASSERT(-a == init_matrix(res1));
+            
     }
 };
-
 #endif
 
