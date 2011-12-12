@@ -120,7 +120,7 @@ public:
         TS_ASSERT(e == init_matrix(result))
 
         // Test adding matrices with wrong dimensions
-        Matrid f(3);
+        Matrix f(3);
         TS_ASSERT_THROWS_ANYTHING(Matrix e = f + a);
     }
 
@@ -142,7 +142,7 @@ public:
         TS_ASSERT(e == init_matrix(result))
 
         // Test subtracting matrices with wrong dimensions
-        Matrid d(3);
+        Matrix d(3);
         TS_ASSERT_THROWS_ANYTHING(Matrix e = d - a);
     }
 
@@ -166,7 +166,7 @@ public:
         Matrix ans = 4*a;
         TS_ASSERT(ans[0][0] == 4 && ans[0][1] == 0 && ans[0][2] == 0
                     && ans[1][0] == 0 && ans[1][1] == 4 && ans[1][2] == 0
-                    && ans[2][0] == 0 && ans[2][1] == 0 && ans[2][2] == k);
+                    && ans[2][0] == 0 && ans[2][1] == 0 && ans[2][2] == 4);
         // Test right side
         a = a_matrix_3by2();
         ans = a*4;
@@ -198,7 +198,7 @@ public:
         Matrix a(2);
         TS_ASSERT(-a == init_matrix(res1));
     }
-    
+
 };
 #endif
 
