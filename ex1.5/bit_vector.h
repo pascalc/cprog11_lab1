@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <algorithm>
 
 using namespace std;
 
@@ -27,6 +28,8 @@ class Vector<bool> {
 	void check_range(index) const; // throw std::out_of_range("Index out of range");
 
 	struct proxy {
+		friend class Vector<bool>;	// enables use of typedefs in Vector<bool>
+
 		bit_container& m_container;
 		std::size_t m_bit;
 		proxy();
@@ -35,7 +38,6 @@ class Vector<bool> {
 			m_container(container),
 			m_bit(bit) { }
 		
-		friend class Vector<bool>;	// enables use of typedefs in Vector<bool>
 		public:
 			proxy& operator=(bool value) {
 				m_container = (m_container & ~(1 << m_bit)) | (value << m_bit); 
@@ -65,36 +67,21 @@ public:
 
 	//http://www.cplusplus.com/reference/std/iterator/RandomAccessIterator/
 	class const_iterator : public std::iterator<std::random_access_iterator_tag, bool> {
+		friend class Vector<bool>;
+
 		const Vector<bool>* m_vector;
 		std::size_t m_index;
 
 		protected:
-			/*const_iterator() :
-				m_vector(m_data),
-				m_index(0) {} */
-
 			const_iterator(const Vector<bool>& v, std::size_t i) : 
 				m_vector(&v),
 				m_index(i) {}
 
-			friend class Vector<bool>;
 
 		public:
 			const_iterator(const const_iterator& copy) :
 				m_vector(copy.m_vector),
 				m_index(copy.m_index) {}
-
-			//~const_iterator() { delete m_vector; }
-
-			// const_iterator& operator=(const const_iterator& cit) {
-			// 	if(*this != cit) {
-			// 		const_iterator copy(cit);
-			// 		m_vector = copy.m_vector;
-			// 		m_index = copy.m_index;	
-			// 	}
-				
-			// 	return *this;
-			// }
 
 			bool operator==(const const_iterator& cit) const {
 				return m_vector == cit.m_vector && m_index == cit.m_index;
@@ -106,10 +93,6 @@ public:
 
 			bool operator*() const {
 				return (*m_vector)[m_index];
-			}
-
-			bool operator->() const {
-				return *(*this);
 			}
 
 			const_iterator& operator+=(std::size_t increment) {
@@ -137,18 +120,6 @@ public:
 				const_iterator copy(*this);
 				return copy--;
 			}
-
-			/*const_iterator operator+(const const_iterator& cit) {
-				const_iterator ret(cit);
-				ret.m_index = m_index + cit.m_index;
-				return ret;
-			}
-
-			const_iterator operator+(std::size_t value) const {
-				const_iterator ret(this);
-				ret.m_index = m_index + value;
-				return ret;
-			}*/
 
 			std::size_t operator-(const const_iterator& cit) const {
 				return m_index - cit.m_index;
@@ -192,9 +163,9 @@ public:
 
 	unsigned int get_int();
 
-	Vector<bool> operator&(const Vector<bool>& rhs) const;
-	Vector<bool> operator|(const Vector<bool>& rhs) const;
-	Vector<bool> operator^(const Vector<bool>& rhs) const;
+	// Vector<bool> operator&(const Vector<bool>& rhs) const;
+	// Vector<bool> operator|(const Vector<bool>& rhs) const;
+	// Vector<bool> operator^(const Vector<bool>& rhs) const;
 };
 
 #endif
@@ -292,14 +263,14 @@ unsigned int Vector<bool>::get_int() {
 	return m_data[0];
 }
 
-Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
+// Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
 	
-}
+// }
 
-Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
+// Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
 	
-}
+// }
 
-Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
+// Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
 	
-}
+// }
