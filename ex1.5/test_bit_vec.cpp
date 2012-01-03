@@ -35,11 +35,12 @@ int main() {
     three[0] = true;
     three[1] = false;
     three[2] = true;
-    // TODO
+    
+
     three.sort();
-    assert(three[0] == true);
+    assert(three[0] == false);
     assert(three[1] == true);
-    assert(three[2] ==false);
+    assert(three[2] == true);
 
     // kontrollera att följande rader inte går att kompilera COMPLETED
     #if 0
@@ -56,7 +57,7 @@ int main() {
 
 	Vector<bool> w;		// tom vektor
 	// TODO
-	// std::copy(vv.begin(), vv.end(), std::back_inserter(w));
+	std::copy(vv.begin(), vv.end(), std::back_inserter(w));
 	// std::cout << std::distance(vv.begin(), vv.end()); // konstant iterator och konvertering
 	Vector<bool>::const_iterator it = vv.begin();
 	std::advance(it, 2);
