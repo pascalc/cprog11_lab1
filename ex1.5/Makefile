@@ -1,18 +1,22 @@
 # Change these
-cxxtestpath = ../../cxxtest/
-testcode    = test_bool_vec.h
+CXXPATH	= ../../cxxtest/
+CXXGEN 	= $(CXXPATH)cxxtestgen.py
+T_CODE	= cxxtest_bit_vec.h
 
-cpp.o:
-	g++ -Wall -g -c $< -o $@
+%.o: %.cpp
+	g++ -Wall -Wextra -Weffc++ -g -c $*.cpp
 
-bool_vector.o = bool_vector.h
+testcode.cpp: $(T_CODE)
+	python $(CXXGEN) --error-printer -o testcode.cpp $(T_CODE)
 
-testcode.cpp: $(testcode)
-	python $(cxxtestpath)cxxtestgen.py --error-printer -o testcode.cpp $(testcode)
+runourtest: testcode.cpp bit_vector.h
+	g++ -I $(CXXPATH) -o runourtest testcode.cpp
 
-runourtest: testcode.cpp bool_vector.o ../ex1.1/vector.h
-	g++ -I $(cxxtestpath) -o runourtest testcode.cpp bool_vector.o
+test_bit_vec.o:	test_bit_vec.cpp bit_vector.h
+
+test_bit_vec: test_bit_vec.o bit_vector.h
+	g++ -g -Wall test_bit_vec.o bit_vector.h -o test_bit_vec
 
 clean:
-	rm -f testcode.cpp bool_vector.o
+	rm -f *.o *.out testcode.cpp runourtest test_bit_vec
 
