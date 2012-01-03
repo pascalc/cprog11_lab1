@@ -1,0 +1,10 @@
+Authors: Joakim Carselind and Pascal Chatterjee
+
+==ex1.5
+Implementation of specialized vector<bool> using one bit to store the value of a boolean instead of a whole byte. Implementation is made by using a proxy that maps the index to a specific bit and either set it to zero or one depending on bool value.
+
+==ex1.6
+Making the const_iterator to work.
+
+==ex1.7
+Overloading the bitwise operators &, | and ^ on the vector<bool>. Also implement three different functions weight() that count the numbers of one in an array, that is the number of bits equal to true.
