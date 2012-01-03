@@ -1,212 +1,224 @@
-#include <iostream>
+#include <cstddef>
+#include <cassert>
 #include <stdexcept>
-#include <string.h>
 #include <algorithm>
+#include <functional>
 
-#define INITIAL_SIZE 100
+#ifndef VECTOR_H
+#define VECTOR_H
 
-template <typename T>
-class Vector {
-private:
-	T * start;
-	T * next;
-	T * end; 
-	size_t mCapacity;
+template <class T> class Vector {
+    private:
+        size_t capacity;
+        size_t internal_size;
+        T * vector;
+        
+        /**
+         * Behaves like >, but implemented using <.
+         */
+        static bool greater_with_less(const T & a, const T & b) {
+            return b < a;
+        }
 
-	// Create a new array with capacity = this.capacity+INCREMENT_SIZE,
-	// and copy all our old values into it
-	void expand() {
-		size_t new_capacity = mCapacity + 1.5*mCapacity;
-		T * new_start = new T [new_capacity];
-		T * new_next = new_start;
-		for (size_t i = 0; i < size(); i++) {
-			*new_next = start[i];
-			new_next++;
-		}
-		T * new_end = new_start + new_capacity;
+    public:
+        /**
+         * Default constructor
+         */
+        Vector() :
+            capacity(2),
+            internal_size(0),
+            vector(new T[capacity]()) { }
+        
+        /**
+         * Copy constructor
+         */
+        Vector(const Vector & copy) :
+            capacity(copy.internal_size),
+            internal_size(copy.internal_size),
+            vector(new T[capacity])
+       {
+            for (size_t i = 0; i < internal_size; ++i) {
+                vector[i] = copy.vector[i];
+            }
+        }
 
-		delete [] start;
+        explicit Vector(size_t size) :
+            capacity(size + 1),
+            internal_size(size),
+            vector(new T[capacity]()) // () = value initilization
+        {
+        }
 
-		start = new_start;
-		next = new_next;
-		end = new_end;
-		mCapacity = new_capacity;
-	}	
+        explicit Vector(size_t size, const T & default_value) :
+            capacity(size + 1),
+            internal_size(size),
+            vector(new T[capacity])
+        {
+            for (size_t i = 0; i < internal_size; ++i) {
+                vector[i] = default_value;
+            }
+        }
 
+        /**
+         * Destructor
+         */
+        ~Vector() {
+            delete[] vector;
+        }
 
-public:
-	// Default constructor -- empty vector
-	Vector<T>() : 
-		mCapacity(INITIAL_SIZE), 
-		start( new T[mCapacity]() ), 
-		next(start), 
-		end(start+mCapacity) { }
+        Vector & operator=(const Vector & copy) {
+            if (this != &copy) {
+                // 1: allocate new memory and copy the elements
+                T * new_vector = new T[copy.internal_size];
+                //std::copy(copy.vector, copy.vector + copy.internal_size, new_vector);
+                for (size_t i = 0; i < copy.internal_size; ++i) {
+                    new_vector[i] = copy.vector[i];
+                }
 
-	// Standard constructor -- elements intialised to T()
-	explicit Vector<T>(size_t initial_size) : 
-		mCapacity(2*initial_size), 
-		start( new T[mCapacity]() ), 
-		next(start), 
-		end(start+mCapacity)	
-	{
-		for (size_t i = 0; i < initial_size; i++) {
-			*next = T();
-			next++;
-		}
-	}
+                // 2: deallocate old memory
+                delete [] vector;
 
-	// Standard constructor -- elements intialised to T initial_value
-	explicit Vector<T>(size_t initial_size, T initial_value) : 
-		mCapacity(2*initial_size),
-		start( new T[mCapacity]() ),
-		next(start),
-		end(start+mCapacity)	
-	{
-		for (size_t i = 0; i < initial_size; i++) {
-			*next = initial_value;
-			next++;
-		}
-	}
+                // 3: assign the new memory to the object
+                vector = new_vector;
+                capacity = copy.internal_size; // we only allocated this size!
+                internal_size = copy.internal_size;
+            }
+            return *this;
+        }
 
-	// Copy constuctor
-	Vector<T>(const Vector<T>& copy) : 
-		mCapacity(copy.capacity), 
-		start( new T[mCapacity]()), 
-		next(start), 
-		end(start+mCapacity)	
-	{
-		// Allocate a new array of the appropriate mCapacity and populate it
-		size_t size = copy.size();
-		for (size_t i = 0; i < size; i++) {
-			*next = copy[i];
-			next++;
-		}
-	}
+        T & operator[](size_t index) {
+            // size_t is unsigned so index >= 0
+            if (index >= internal_size) {
+                throw std::out_of_range("out of range");
+            }
+            return vector[index];
+        }
 
-	// Deconstructor
-	~Vector<T>() {
-		delete [] start;
-	}
+        const T & operator[](size_t index) const {
+            if (index >= internal_size) {
+                throw std::out_of_range("out of range");
+            }
+            return vector[index];
+        }
 
-	// Return the current size of this Vector
-	size_t size() const {
-		return next-start;
-	}
+        /**
+         * Push back
+         */
+        void push_back(const T & element) {
+            if (internal_size >= capacity) {
+                update_capacity();
+            }
+            vector[internal_size] = element;
+            internal_size++;
+        }
 
-	// Return the current capacity of this Vector
-	size_t capacity() const {
-		return mCapacity;
-	}
+        /**
+         * Insert
+         */
+        void insert(size_t index, const T & element) {
+            if (index > internal_size) {
+                throw std::out_of_range("out of range");
+            } else if (index == internal_size) {
+                push_back(element);
+            } else {
+                if (internal_size >= capacity) {
+                    update_capacity();
+                }
+                for (size_t i = internal_size; i > index; --i) {
+                    vector[i] = vector[i-1];
+                }
+                vector[index] = element;
+                internal_size++;
+            }
+        }
 
-	// Read operator
-	const T& operator[](size_t index) const {
-		if (index >= size() || index < 0) {
-			throw std::out_of_range("Out of range!");
-		}
-		return start[index];	
-	}
-	
-	// Write operators
-	
-	// SET the value at an index
-	T& operator[](size_t index) {
-		if (index >= size() || index < 0) {
-			throw std::out_of_range("Out of range!");
-		}
-		return start[index];	
-	}
-	
-	// INSERT and SHIFT at an index: eg v = [0,1,2,3]; v.insert(0,-1) -> v = [-1,0,1,2,3]
-	Vector<T>& insert(size_t index, T element) {
-		if (index > size() || index < 0) {
-			throw std::out_of_range("Out of range!");
-		}
-		if (index == size()) {
-			push_back(element);
-		} else {
-			// If we are full
-			if(next == end){
-				expand();	
-			}
-			// shift all the elements to the right, right by one
-			size_t j = size()-1;
-			while(true) {
-				T tmp = start[j];
-				start[j+1] = tmp;
-				if(j == index)
-					break;
-				j--;
-			}
-			next++;
-			start[index] = element;
-		}
-		return *this;
-	}
-	
-	// APPEND to the vector
-	T push_back(T element) {
-		if (next == end) {
-			expand();
-		} 
-		*next = element;
-		next++;	
-		return element;	
-	}
-	
-	// ERASE an element from the vector
-	Vector<T>& erase(size_t index) {
-		if (index >= size() || index < 0) {
-			throw std::out_of_range("Out of range!");
-		}
-		// If last element, just clear the array
-		if (size() == 1) {
-			return clear();
-		}
-		// If it's not the last index, we need to shift
-		if (index < size()-1) {
-			// shift all the elements to the right, left by one
-			for (size_t i = index+1; i < size(); i++) {
-				T tmp = start[i];
-				start[i-1] = tmp;
-			}
-		}
-		next--;
-		return *this;
-	}
-	
-	// CLEAR all elements from the vector
-	Vector<T>& clear() {
-		next = start;
-		return *this;
-	}
-	
-	// SORT the elements in this vector
-	Vector<T>& sort(bool ascending=true) {
-		if (ascending) {
-			std::sort(start,start+size());
-		} else {
-			std::sort(std::reverse_iterator<T*>(start+size()),std::reverse_iterator<T*>(start));
-		}
-		return *this;	
-	}
+        /**
+         * Erase
+         */
+        void erase(size_t index) {
+            if (index >= internal_size) {
+                throw std::out_of_range("out of range");
+            } else {
+                internal_size--;
+                for (size_t i = index; i < internal_size; ++i) {
+                    vector[i] = vector[i+1];
+                }
+            }
+        }
 
-	// Assignment operator
-	Vector<T>& operator=(const Vector<T>& rhs) {
-		// Trivial case, v1 = v1
-		if (this == &rhs) {
-			return *this;
-		}
-		
-		// Otherwise copy the rhs array into our own
-		mCapacity = rhs.capacity();
-		start = new T [mCapacity];
-		next = start;
-		size_t size = rhs.size();
-		for (size_t i = 0; i < size; i++) {
-			*next = rhs[i];
-			next++;
-		}
-		end = start + mCapacity;
-		return *this;
-	}
+        /**
+         * Clear
+         */
+        void clear() {
+            internal_size = 0;
+        }
+
+        /**
+         * Size
+         */
+        size_t size() const {
+            return internal_size;
+        }
+
+        /**
+         * Resize. New elements are assigned the given value.
+         */
+        void resize(size_t new_size, const T& value = T()) {
+            if (new_size > capacity) {
+                // Need to resize
+                capacity = new_size;
+                T * new_vector = new T[capacity];
+                for (size_t i = 0; i < internal_size; ++i) {
+                    new_vector[i] = vector[i];
+                }
+                delete [] vector;
+                vector = new_vector;
+
+            }
+
+            if (new_size > internal_size) {
+                // Set the new elements to the default value
+                for (size_t i = internal_size; i < new_size; ++i) {
+                    vector[i] = value;
+                }
+            }
+
+            internal_size = new_size;
+        }
+
+        void sort() {
+            sort(true);
+        }
+
+        /**
+         * Sort
+         */
+        void sort(bool ascending) {
+            if (ascending) {
+                std::sort(vector, vector + internal_size, std::less<T>());
+            } else {
+                // We don't want to require T to implement > so we use
+                // a custom comparer which uses <.
+                std::sort(vector, vector + internal_size, greater_with_less);
+            }
+        }
+
+    private:
+        /**
+         * Update capacity
+         */
+        void update_capacity() {
+            if (capacity == 0) capacity++;
+            capacity = capacity * 2;
+            assert(capacity > internal_size);
+            
+            T * new_vector = new T[capacity];
+            for (size_t i = 0; i < internal_size; ++i) {
+                new_vector[i] = vector[i];
+            }
+            delete [] vector;
+            vector = new_vector;
+        }
 };
+
+#endif
