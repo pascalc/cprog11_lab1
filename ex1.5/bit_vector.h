@@ -20,7 +20,7 @@ class Vector<bool> {
 	std::size_t m_size;
 	Vector<bit_container> m_data;
 
-	// TODO: Should be declared static
+	// TODO: Could be declared static
 	std::size_t size2containers(std::size_t);	// const removed because of container in proxy
 	std::size_t index2container(index) const; // Move to proxy?
 	std::size_t index2bit(index) const; // Move to proxy?
@@ -62,21 +62,19 @@ public:
 	typedef size_t difference_type;
 	typedef bool value_type;
 	typedef bool& const_reference;
-	typedef bool* const_pointer;
+	typedef bool* const const_pointer;
 	typedef random_access_iterator_tag iterator_category;
 
 	//http://www.cplusplus.com/reference/std/iterator/RandomAccessIterator/
 	class const_iterator : public std::iterator<std::random_access_iterator_tag, bool> {
-		friend class Vector<bool>;
+		private:
+			friend class Vector<bool>;
+			const Vector<bool>* m_vector;
+			std::size_t m_index;
 
-		const Vector<bool>* m_vector;
-		std::size_t m_index;
-
-		protected:
 			const_iterator(const Vector<bool>& v, std::size_t i) : 
 				m_vector(&v),
 				m_index(i) {}
-
 
 		public:
 			const_iterator(const const_iterator& copy) :
@@ -163,9 +161,9 @@ public:
 
 	unsigned int get_int();
 
-	// Vector<bool> operator&(const Vector<bool>& rhs) const;
-	// Vector<bool> operator|(const Vector<bool>& rhs) const;
-	// Vector<bool> operator^(const Vector<bool>& rhs) const;
+	Vector<bool> operator&(const Vector<bool>& rhs) const;
+	Vector<bool> operator|(const Vector<bool>& rhs) const;
+	Vector<bool> operator^(const Vector<bool>& rhs) const;
 };
 
 #endif
@@ -256,21 +254,29 @@ unsigned int Vector<bool>::get_int() {
 	if(m_size == 0) {
 		return 0;
 	}
-	/*bit_container mask = 1 << NR_BITS_INT-1;
-	mask = mask & ~(1 << (NR_BITS_INT - 1 - m_size));
-	bit_container ret_int = m_data[0] & mask;
-	return ret_int;*/
 	return m_data[0];
 }
 
-// Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
-	
-// }
+Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
+	Vector<bool> ret(*this);
+	for(std::size_t i = 0; i < m_size; ++i) {
+		ret[i] = ret[i] & rhs[i];	
+	}	
+	return ret;
+}
 
-// Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
-	
-// }
+Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
+	Vector<bool> ret(*this);
+	for(std::size_t i = 0; i < m_size; ++i) {
+		ret[i] = ret[i] | rhs[i];	
+	}	
+	return ret;	
+}
 
-// Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
-	
-// }
+Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
+	Vector<bool> ret(*this);
+	for(std::size_t i = 0; i < m_size; ++i) {
+		ret[i] = ret[i] ^ rhs[i];
+	}	
+	return ret;
+}
