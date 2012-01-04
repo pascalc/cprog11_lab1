@@ -82,6 +82,15 @@ public:
         Vector<bool> a(v ^ w);
         TS_ASSERT_EQUALS(a[0], true);
 
+        Vector<bool> two_1(2), two_2(2);
+        two_1[0] = true;
+        two_1[1] = false;
+        two_2[0] = true;
+        two_2[1] = false;
+        Vector<bool> two_ans(two_1 ^ two_2);
+        TS_ASSERT_EQUALS(two_ans[0], false);
+        TS_ASSERT_EQUALS(two_ans[1], false);
+
         Vector<bool> three_1(3), three_2(3);
         three_1[0] = true;
         three_1[1] = false;
@@ -92,9 +101,9 @@ public:
         three_2[2] = false;
 
         Vector<bool> three_ans(three_1 ^ three_2);
-        TS_ASSERT_EQUALS(three_ans[0], true);
-        TS_ASSERT_EQUALS(three_ans[1], false);
-        TS_ASSERT_EQUALS(three_ans[2], true);
+        TS_ASSERT_EQUALS(three_ans[0], false);
+        TS_ASSERT_EQUALS(three_ans[1], true);
+        TS_ASSERT_EQUALS(three_ans[2], false);
     }
 
 };
