@@ -4,7 +4,7 @@ CXXGEN 	= $(CXXPATH)cxxtestgen.py
 T_CODE	= cxxtest_bit_vec.h
 TEST_16 = cxxtest_ex1_6.h
 
-tests: test1_5 test1_6
+tests: test1_5 test1_6 test1_7
 
 %.o: %.cpp
 	g++ -Wall -Wextra -Weffc++ -g -c $*.cpp
@@ -16,13 +16,13 @@ test1_%.cpp: test1_%.h
 	python $(CXXGEN) --error-printer -o test1_$*.cpp test1_$*.h
 
 test1_%: test1_%.cpp bit_vector.h
-	g++ -I $(CXXPATH) -o test1_$* test1_$*.cpp
+	g++ -I $(CXXPATH) -o test1_$*.out test1_$*.cpp
 
 test_bit_vec: test_bit_vec.o bit_vector.h
 	g++ -g -Wall test_bit_vec.o bit_vector.h -o test_bit_vec
 
 clean:
-	rm -f *.o *.out test1_* test_bit_vec
+	rm -f *.o *.out test_bit_vec
 
 # Deprecated
 testcode.cpp: $(T_CODE)
