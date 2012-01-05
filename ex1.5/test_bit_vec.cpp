@@ -3,6 +3,14 @@
 
 #include "bit_vector.h"
 
+void print(Vector<bool>& v, char* msg) {
+    std::cout << "Testing " << msg << std::endl;
+    for(std::size_t i = 0; i < v.size(); ++i) {
+        std::cout << v[i];
+    }
+    std::cout << std::endl;
+} 
+
 int main() {
 
     Vector<bool> v;           // ok: defaultkonstruktor ger vektor med flyttal
@@ -56,9 +64,13 @@ int main() {
 	assert(vv[3] == true);
 
 	Vector<bool> w;		// tom vektor
-	// TODO
-	std::copy(vv.begin(), vv.end(), std::back_inserter(w));
-	// std::cout << std::distance(vv.begin(), vv.end()); // konstant iterator och konvertering
+	std::copy(vv.begin(), vv.end(), std::back_inserter(w));    
+    print(w, "copy using back_inserter");
+    
+    //TODO std::sort(w.begin(), w.end());
+    //print(w, "sort using std::sort");
+
+    std::cout << std::distance(vv.begin(), vv.end()); // konstant iterator och konvertering
 	Vector<bool>::const_iterator it = vv.begin();
 	std::advance(it, 2);
 	assert(*it == false);
