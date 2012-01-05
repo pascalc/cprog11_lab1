@@ -67,7 +67,7 @@ int main() {
 	std::copy(vv.begin(), vv.end(), std::back_inserter(w));    
     print(w, "copy using back_inserter");
     
-    //TODO std::sort(w.begin(), w.end());
+    //std::sort(w.begin(), w.end()); // TODO
     //print(w, "sort using std::sort");
 
     std::cout << std::distance(vv.begin(), vv.end()); // konstant iterator och konvertering
