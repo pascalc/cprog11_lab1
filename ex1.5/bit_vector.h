@@ -58,13 +58,15 @@ class Vector<bool> {
 
 	};
 public:
-		// iterator traits http://www.cplusplus.com/reference/std/iterator/iterator_traits/
+	// iterator traits http://www.cplusplus.com/reference/std/iterator/iterator_traits/
 	typedef size_t difference_type;
 	typedef bool value_type;
-	typedef bool& const_reference;
-	typedef bool* const const_pointer;
+	// typedef bool& reference;
+	// typedef bool* pointer;
 	typedef random_access_iterator_tag iterator_category;
 
+	typedef const bool* const_pointer;
+	typedef const bool& const_reference;
 	//http://www.cplusplus.com/reference/std/iterator/RandomAccessIterator/
 	class const_iterator : public std::iterator<std::random_access_iterator_tag, bool> {
 		private:
