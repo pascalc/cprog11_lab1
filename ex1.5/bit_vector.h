@@ -21,9 +21,9 @@ class Vector<bool> {
 	Vector<bit_container> m_data;
 
 	// TODO: Could be declared static
-	std::size_t size2containers(std::size_t);	// const removed because of container in proxy
-	std::size_t index2container(index) const; // Move to proxy?
-	std::size_t index2bit(index) const; // Move to proxy?
+	std::size_t size2containers(std::size_t);
+	std::size_t index2container(index) const;
+	std::size_t index2bit(index) const;
 
 	void check_range(index) const; // throw std::out_of_range("Index out of range");
 
@@ -95,6 +95,10 @@ public:
 				return (*m_vector)[m_index];
 			}
 
+			bool* operator->() const {
+				return &(operator*());
+			}
+
 			const_iterator& operator+=(std::size_t increment) {
 				m_index += increment; return *this;
 			}
@@ -106,14 +110,14 @@ public:
 			const_iterator& operator++() { 
 				m_index++; return *this; 
 			}
+
+			const_iterator& operator--() { 
+				m_index--; return *this; 
+			}
 			
 			const_iterator operator++(int) { 
 				const_iterator copy(*this);
 				return copy++; 
-			}
-
-			const_iterator& operator--() { 
-				m_index--; return *this; 
 			}
 
 			const_iterator operator--(int) {
@@ -121,8 +125,16 @@ public:
 				return copy--;
 			}
 
-			std::size_t operator-(const const_iterator& cit) const {
-				return m_index - cit.m_index;
+			const_iterator operator-(std::size_t value) const {
+				const_iterator copy(*this);
+				copy.m_index -= value;
+				return copy;
+			}
+
+			const_iterator operator+(std::size_t value) const {
+				const_iterator copy(*this);
+				copy.m_index += value;
+				return copy;
 			}
 	};
 
