@@ -83,6 +83,14 @@ public:
 				m_vector(copy.m_vector),
 				m_index(copy.m_index) {}
 
+			const_iterator& operator=(const const_iterator& cit) {
+				if(*this != cit) {
+					m_vector = cit.m_vector;
+					m_index = cit.m_index;
+				}
+				return *this;
+			}
+
 			bool operator==(const const_iterator& cit) const {
 				return m_vector == cit.m_vector && m_index == cit.m_index;
 			}
@@ -91,20 +99,24 @@ public:
 				return !(*this == cit);
 			}
 
+			// bool operator<(const const_iterator& cit) const {
+			// 	return *this < *cit;
+			// }
+
 			bool operator*() const {
 				return (*m_vector)[m_index];
 			}
 
-			bool* operator->() const {
-				return &(operator*());
+			// bool* operator->() const {
+			// 	return &(operator*());
+			// }
+
+			const_iterator& operator+=(std::size_t value) {
+				m_index += value; return *this;
 			}
 
-			const_iterator& operator+=(std::size_t increment) {
-				m_index += increment; return *this;
-			}
-
-			const_iterator& operator-=(std::size_t decrement) {
-				m_index -= decrement; return *this;
+			const_iterator& operator-=(std::size_t value) {
+				m_index -= value; return *this;
 			}
 
 			const_iterator& operator++() { 
@@ -113,16 +125,6 @@ public:
 
 			const_iterator& operator--() { 
 				m_index--; return *this; 
-			}
-			
-			const_iterator operator++(int) { 
-				const_iterator copy(*this);
-				return copy++; 
-			}
-
-			const_iterator operator--(int) {
-				const_iterator copy(*this);
-				return copy--;
 			}
 
 			const_iterator operator-(std::size_t value) const {
@@ -135,6 +137,22 @@ public:
 				const_iterator copy(*this);
 				copy.m_index += value;
 				return copy;
+			}
+			
+			const_iterator operator++(int) { 
+				const_iterator copy(*this);
+				operator++();
+				return copy; 
+			}
+
+			const_iterator operator--(int) {
+				const_iterator copy(*this);
+				operator--();
+				return copy;
+			}
+
+			difference_type operator-(const const_iterator& cit) const {
+				return (m_index - cit.m_index);
 			}
 	};
 
@@ -178,6 +196,9 @@ public:
 	Vector<bool> operator&(const Vector<bool>& rhs) const;
 	Vector<bool> operator|(const Vector<bool>& rhs) const;
 	Vector<bool> operator^(const Vector<bool>& rhs) const;
+	int weight1() const;
+	int weight2() const;
+	int weight3() const;
 };
 
 #endif
@@ -293,4 +314,15 @@ Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
 		ret[i] = ret[i] ^ rhs[i];
 	}	
 	return ret;
+}
+
+int Vector<bool>::weight1() const {
+	return 0;
+}
+int Vector<bool>::weight2() const {
+	return 0;
+}
+
+int Vector<bool>::weight3() const {
+	return 0;
 }
