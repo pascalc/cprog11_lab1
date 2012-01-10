@@ -42,17 +42,25 @@ public:
 
         Vector<bool> three_1(3), three_2(3);
         three_1[0] = true;
-        three_1[1] = false;
+        three_1[1] = true;
         three_1[2] = false;
 
-        three_2[0] = true;
+        three_2[0] = false;
         three_2[1] = true;
         three_2[2] = false;
 
         Vector<bool> three_ans(three_1 & three_2);
-        TS_ASSERT_EQUALS(three_ans[0], true);
-        TS_ASSERT_EQUALS(three_ans[1], false);
+        TS_ASSERT_EQUALS(three_ans[0], false);
+        TS_ASSERT_EQUALS(three_ans[1], true);
         TS_ASSERT_EQUALS(three_ans[2], false);
+
+        Vector<bool> big_1(127, false), big_2(127, false);
+        
+        for(uint index = 0; index < big_1.size(); ++index) {
+            big_1[index] = true; big_2[index] = true;
+            Vector<bool> big_ans(big_1 & big_2);
+            TS_ASSERT_EQUALS(big_ans[index], true);
+        }
     }
 
     void test_bitwise_or() {
@@ -74,6 +82,14 @@ public:
         TS_ASSERT_EQUALS(three_ans[0], true);
         TS_ASSERT_EQUALS(three_ans[1], true);
         TS_ASSERT_EQUALS(three_ans[2], false);
+
+        Vector<bool> big_1(127, false), big_2(127, false);
+        
+        for(std::size_t index = 0; index < big_1.size(); ++index) {
+            big_1[index] = false; big_2[index] = true;
+            Vector<bool> big_ans(big_1 | big_2);
+            TS_ASSERT_EQUALS(big_ans[index], true);
+        }
     }
 
     void test_bitwise_xor() {
@@ -104,6 +120,20 @@ public:
         TS_ASSERT_EQUALS(three_ans[0], false);
         TS_ASSERT_EQUALS(three_ans[1], true);
         TS_ASSERT_EQUALS(three_ans[2], false);
+
+        Vector<bool> big_1(127, false), big_2(127, true);
+        
+        for(uint index = 0; index < big_1.size(); ++index) {
+            Vector<bool> big_ans(big_1 ^ big_2);
+            TS_ASSERT_EQUALS(big_ans[index], true);
+        }
+    }
+
+    void test_weight1() {
+        TS_TRACE("Testing count. First implementation");
+        Vector<bool> a(50, true);
+        int ans = a.weight1();
+        TS_ASSERT_EQUALS(ans, 50);
     }
 
 };
