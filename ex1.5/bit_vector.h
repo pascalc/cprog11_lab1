@@ -294,22 +294,32 @@ unsigned int Vector<bool>::get_int() {
 
 Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i)
-		ret[i] = ret[i] & rhs[i];
+	std::size_t nr_containers = (m_size > 0) ? 1 : 0;
+	nr_containers += (m_size / NR_BITS_INT);
+
+	for(std::size_t i = 0; i < nr_containers; ++i)
+		ret.m_data[i] &= rhs.m_data[i];
+	
 	return ret;
 }
 
 Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i)
-		ret[i] = ret[i] | rhs[i];
+	std::size_t nr_containers = (m_size > 0) ? 1 : 0;
+	nr_containers += (m_size / NR_BITS_INT);
+
+	for(std::size_t i = 0; i < nr_containers; ++i)
+		ret.m_data[i] |= rhs.m_data[i];
 	return ret;
 }
 
 Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i)
-		ret[i] = ret[i] ^ rhs[i];
+	std::size_t nr_containers = (m_size > 0) ? 1 : 0;
+	nr_containers += (m_size / NR_BITS_INT);
+
+	for(std::size_t i = 0; i < nr_containers; ++i)
+		ret.m_data[i] ^= rhs.m_data[i];
 	return ret;
 }
 
