@@ -13,8 +13,9 @@ template <>
 class Vector<bool> {
 	typedef unsigned int bit_container;
 	typedef std::size_t index;
-
-	static const std::size_t NR_BITS_INT = 32;
+	// should be handled more beatiful, including bit_container to ease the use of different container types
+	// NR_BITS_IN_CONTAINER = sizeof(container)*nr_bits_per_bytes
+	static const std::size_t NR_BITS_INT = 32; 
 	static const std::size_t ALL_BITS_INT = 0xFFFFFFFF; // 2^31-1, 
 
 	std::size_t m_size;
@@ -26,6 +27,8 @@ class Vector<bool> {
 	std::size_t index2bit(index) const;
 
 	void check_range(index) const; // throw std::out_of_range("Index out of range");
+
+	uint clear_bits(bit_container) const;
 
 	struct proxy {
 		friend class Vector<bool>;	// enables use of typedefs in Vector<bool>
@@ -267,9 +270,6 @@ void Vector<bool>::sort() {
 }
 
 void Vector<bool>::sort(bool ascending) {
-	//xCount = x - ((x >> 1) & 033333333333) - ((x >> 2) & 011111111111);
-	//nr_ones = ((xCount + (xCount >> 3)) & 030707070707) % 63;
-
 	std::size_t nr_zeros = 0, i = 0;
 	for(; i < m_size; ++i)
 		if( (*this)[i] != ascending) ++nr_zeros;
@@ -294,30 +294,46 @@ unsigned int Vector<bool>::get_int() {
 
 Vector<bool> Vector<bool>::operator&(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i) {
-		ret[i] = ret[i] & rhs[i];	
-	}	
+	for(std::size_t i = 0; i < m_size; ++i)
+		ret[i] = ret[i] & rhs[i];
 	return ret;
 }
 
 Vector<bool> Vector<bool>::operator|(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i) {
-		ret[i] = ret[i] | rhs[i];	
-	}	
-	return ret;	
+	for(std::size_t i = 0; i < m_size; ++i)
+		ret[i] = ret[i] | rhs[i];
+	return ret;
 }
 
 Vector<bool> Vector<bool>::operator^(const Vector<bool>& rhs) const {
 	Vector<bool> ret(*this);
-	for(std::size_t i = 0; i < m_size; ++i) {
+	for(std::size_t i = 0; i < m_size; ++i)
 		ret[i] = ret[i] ^ rhs[i];
-	}	
 	return ret;
 }
 
+uint Vector<bool>::clear_bits(bit_container c) const {
+	uint container = c;
+	for(std::size_t i = (m_size - NR_BITS_INT); i < NR_BITS_INT; ++i) {
+		container = (container & ~(1 << i) );
+	}
+	return container;
+}
+
 int Vector<bool>::weight1() const {
-	return 0;
+	std::size_t nr_containers;
+	if(m_size > 0) nr_containers = 1;
+	nr_containers += (m_size / NR_BITS_INT);
+
+	int nr_ones = 0;
+	for(std::size_t i = 0; i < nr_containers; ++i) {
+		bit_container x = m_data[i];
+		if(i == (nr_containers - 1)) x = clear_bits(x);
+		int xCount = x - ((x >> 1) & 033333333333) - ((x >> 2) & 011111111111);
+		nr_ones += ((xCount + (xCount >> 3)) & 030707070707) % 63;
+	}
+	return nr_ones;
 }
 int Vector<bool>::weight2() const {
 	return 0;
