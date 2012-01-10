@@ -132,7 +132,7 @@ public:
     void test_empty_weights() {
         Vector<bool> empty;
         TS_ASSERT_EQUALS(empty.weight1(), 0);
-        //TS_ASSERT_EQUALS(empty.weight2(), 0);
+        TS_ASSERT_EQUALS(empty.weight2(), 0);
         //TS_ASSERT_EQUALS(empty.weight3(), 0);
     }
 
@@ -147,7 +147,19 @@ public:
         TS_ASSERT_EQUALS(b.weight1(), 0);
         b[31] = true;
         TS_ASSERT_EQUALS(b.weight1(), 1);
+    }
 
+    void test_weight2() {
+        TS_TRACE("Testing count. Second implementation");
+        Vector<bool> a(50, true);
+        TS_ASSERT_EQUALS(a.weight2(), 50);
+        a[49] = false;
+        TS_ASSERT_EQUALS(a.weight2(), 49);
+
+        Vector<bool> b(32, false);
+        TS_ASSERT_EQUALS(b.weight2(), 0);
+        b[31] = true;
+        TS_ASSERT_EQUALS(b.weight2(), 1);
     }
 
 };

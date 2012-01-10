@@ -345,7 +345,18 @@ int Vector<bool>::weight1() const {
 	return nr_ones;
 }
 int Vector<bool>::weight2() const {
-	return 0;
+	std::size_t nr_containers = (m_size > 0) ? 1 : 0;
+	nr_containers += (m_size / NR_BITS_INT);
+
+	uint nr_ones = 0;
+	for(std::size_t i = 0; i < nr_containers; ++i) {
+		bit_container v = m_data[i];
+		if(i == (nr_containers-1)) v = clear_bits(v);
+		for (; v; nr_ones++) {
+		  v &= v - 1; // clear the least significant bit set
+		}	
+	}
+	return nr_ones;
 }
 
 int Vector<bool>::weight3() const {
