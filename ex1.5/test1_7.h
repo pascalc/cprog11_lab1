@@ -129,11 +129,25 @@ public:
         }
     }
 
+    void test_empty_weights() {
+        Vector<bool> empty;
+        TS_ASSERT_EQUALS(empty.weight1(), 0);
+        //TS_ASSERT_EQUALS(empty.weight2(), 0);
+        //TS_ASSERT_EQUALS(empty.weight3(), 0);
+    }
+
     void test_weight1() {
         TS_TRACE("Testing count. First implementation");
         Vector<bool> a(50, true);
-        int ans = a.weight1();
-        TS_ASSERT_EQUALS(ans, 50);
+        TS_ASSERT_EQUALS(a.weight1(), 50);
+        a[49] = false;
+        TS_ASSERT_EQUALS(a.weight1(), 49);
+
+        Vector<bool> b(32, false);
+        TS_ASSERT_EQUALS(b.weight1(), 0);
+        b[31] = true;
+        TS_ASSERT_EQUALS(b.weight1(), 1);
+
     }
 
 };
