@@ -322,8 +322,7 @@ uint Vector<bool>::clear_bits(bit_container c) const {
 }
 
 int Vector<bool>::weight1() const {
-	std::size_t nr_containers;
-	if(m_size > 0) nr_containers = 1;
+	std::size_t nr_containers = (m_size > 0) ? 1 : 0;
 	nr_containers += (m_size / NR_BITS_INT);
 
 	int nr_ones = 0;
