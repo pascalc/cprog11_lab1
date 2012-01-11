@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
+#include <iterator>
+#include <cctype>
 
 Matrix::Matrix() : 
 	m_vectors(0), 
@@ -22,7 +24,7 @@ Matrix::Matrix(std::size_t size ) :
     m_rows(size),
     m_cols(size) 
 {
-    for(size_t i = 0; i < m_rows; ++i)
+    for(size_t i = 0; i < size; ++i)
             (*this)[i][i] = 1;
 }
 
@@ -80,9 +82,13 @@ Matrix Matrix::operator+(const Matrix& m) const {
     //return m_iterator(m, &add);
     validate(m);
     Matrix res(*this);
-    for(size_t r = 0; r < m_rows; ++r)
-        for(size_t c = 0; c < m_cols; ++c)
-            res[r][c] += (*this)[r][c];
+	for(size_t r = 0; r < m_rows; ++r) {
+		for(size_t c = 0; c < m_cols; ++c) {
+			res[r][c] += (*this)[r][c];
+		}
+	}
+	return *this;
+	
 }
 
 Matrix Matrix::operator-(const Matrix& m) const {
@@ -92,6 +98,8 @@ Matrix Matrix::operator-(const Matrix& m) const {
     for(size_t r = 0; r < m_rows; ++r)
         for(size_t c = 0; c < m_cols; ++c)
             res[r][c] -= (*this)[r][c];
+	
+	return *this;
 }
 
 Matrix Matrix::operator*(int k) const {
@@ -99,7 +107,9 @@ Matrix Matrix::operator*(int k) const {
     Matrix res(*this);
     for(size_t r = 0; r < m_rows; ++r)
         for(size_t c = 0; c < m_cols; ++c)
-            res[r][c] *= k;;
+            res[r][c] *= k;
+	
+	return *this;
 }
 
 Matrix Matrix::operator-() const {
@@ -130,8 +140,8 @@ Matrix Matrix::operator*(const Matrix& m) const {
 Matrix& Matrix::transpose() {
     Matrix copy(*this);
 
-    int new_rows = m_cols;
-    int new_cols = m_rows;
+    size_t new_rows = m_cols;
+    size_t new_cols = m_rows;
     m_vectors.clear();
     Vector<Matrix::matrix_row> m_vectors(m_cols, m_rows);
 
@@ -139,29 +149,29 @@ Matrix& Matrix::transpose() {
         for(size_t col = 0; col < new_cols; ++col)
             (*this)[row][col] = copy[col][row];
     
-    int m_rows = new_rows;
-    int m_cols = new_cols;
+    (*this).m_rows = new_rows;
+    (*this).m_cols = new_cols;
 
     return *this;
 }
 
 Matrix::matrix_row& Matrix::operator[](index i) {
-    return (*this)[i];
+    return m_vectors[i];
 }
 
 const Matrix::matrix_row& Matrix::operator[](index i) const {
-    return (*this)[i];
+    return m_vectors[i];
 }
 
 Matrix operator*(int k, const Matrix& m) {
     return k * m;
 }
 
-inline std::size_t Matrix::rows() const { 
+std::size_t Matrix::rows() const { 
     return m_rows; 
 }
 
-inline std::size_t Matrix::cols() const { 
+std::size_t Matrix::cols() const { 
     return m_cols; 
 }
 
@@ -180,30 +190,108 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m)  {
     return os;
 }
 
-// TODO
-// Input. 3x3 matrix = [1 2 3; 4 5 6; 7 8 9]
-std::istream& operator>>(std::istream& is, Matrix& m) {
-    if(is.get() != '[') throw std::invalid_argument("Invalid input. Expected '['");
-
-    size_t rows = 0, cols = 0;
-    std::string input, row;
-    std::getline(is, input);
-
-    std::istringstream line(input);
-    while(std::getline(line, row, ';')) {
-        Matrix::matrix_row m_row;
-        std::copy(std::istream_iterator<int>(row), std::istream_iterator<int>(),
-                std::back_inserter(m_row));
-        ++rows;
-        cols = m_row.size();
-        m.m_vectors.push_back(m_row);
-        m_row.clear();
+void trim_whitespaces(std::istream& is) {
+	while( is.good() ) {
+		if(! std::isspace( is.get() ) ) {
+			// When not space, go to previous character and break
+			is.unget();
+			return;
+		}
+	}
+}std::istream& operator>>(std::istream& is, Matrix& m)
+{
+    // Read [
+    trim_whitespaces(is);
+    if (!is.good() || is.get() != '[') {
+        throw std::invalid_argument("does not start with [");
     }
-    if(rows == 0) m = Matrix();
-    m.m_rows = rows;
-    m.m_cols = cols;
-    return is;
+    trim_whitespaces(is);
+    
+    size_t c = 0, r = 0;; // current column / row
+    size_t cols = -1; // number of columns
+    Matrix::matrix_row values;
+    while (is.good()) {
+        int ch = is.get();
+        
+        // Ignore whitespace
+        if (std::isspace(ch)) continue;
+        
+        if (ch == ';' || ch == ']') {
+            // Set / check column count
+            if (r == 0 && c == 0 && ch == ']') {
+                // Empty matrix
+                m = Matrix();
+                return is;
+            } else if (r == 0) {
+                // First row
+                cols = c;
+                m = Matrix(1, cols);
+                m.m_vectors.clear(); // remove zero row
+            } else if (c != cols) {
+                // Not same length as first row
+                throw std::invalid_argument("rows have different lengths");
+            } else {
+                ++m.m_rows;
+            }
+            
+            // Add this row
+            m.m_vectors.push_back(values);
+            values.clear();
+            c = 0;
+            ++r;
+            
+            if (ch == ']') return is;
+            else continue;
+        }
+        
+        // Number
+        is.unget();
+        int num;
+        is >> num;
+        values.push_back(num);
+        ++c;
+    }
+    
+    throw std::invalid_argument("unexpected end of stream");
 }
+//~ std::istream& operator>>(std::istream& is, Matrix& m) {
+	//~ std::cout << std::endl << "operator>>" << std::endl;
+	//~ // trim leading whitespaces (if any)
+	//~ trim_whitespaces(is);
+	//~ if(is.get() != '[' || !is.good() ) throw std::invalid_argument("Invalid input. Expected '[' as first character");
+	//~ trim_whitespaces(is);
+	
+	//~ size_t rows = 0, cols = 0;
+	//~ Matrix::matrix_row row;
+	//~ while( is.good() ) {
+		//~ int digit = is.get();
+		
+		//~ std::cout << digit << " ";
+		//~ if(! std::isdigit(digit) ) {
+			//~ // end of row
+			//~ if(digit == ';' ) {
+				//~ rows++;
+				//~ m.m_vectors.push_back(row);
+				//~ row.clear();
+			//~ }
+			//~ // end of input
+			//~ if(digit == ']') {
+				//~ if(rows == 0 && cols == 0) {
+					//~ m = Matrix();
+				//~ }
+				//~ return is;
+			//~ }
+		//~ }
+		//~ else {
+			//~ row.push_back(digit);
+			//~ cols++;
+		//~ }
+		
+		//~ if(!std::isspace( is.get() )) is.unget();
+	//~ }
+	
+	//~ std::invalid_argument("Invalid input. Expected ']' as last character");
+//~ }
 
 // Obsolete
 Matrix::Matrix(int size) : 
@@ -211,7 +299,7 @@ Matrix::Matrix(int size) :
     m_rows(size),
     m_cols(size) 
 {
-    for(int i = 0; i < m_rows; ++i)
+    for(size_t i = 0; i < m_rows; ++i)
             (*this)[i][i] = 1;
 }
 

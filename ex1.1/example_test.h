@@ -38,14 +38,18 @@ public:
         TS_ASSERT(a.rows() == 0 && a.cols() == 0);
         // Explicit constructor
         Matrix b(3);
-        check_equal(b, init_matrix("[ 1 0 0 ; 0 1 0; 0 0 1 ]") );
-        Matrix c(1);
-        TS_ASSERT(c[0][0] == 1);
+	TS_ASSERT(b.rows() == 3 && b.cols() == 3);
+	check_identity(b);
+	Matrix c(1);
+	TS_ASSERT(c.rows() == 1 && c.cols() == 1);
+        check_identity(c);
         // Constructur two arguments
         Matrix d(3, 2);
         TS_ASSERT(d.rows() == 3 && d.cols() == 2);
+	    check_all_zero(d);
         Matrix e(3,3);
         TS_ASSERT(e.rows() == 3 && e.cols() == 3);
+	    check_all_zero(e);
     }
 
     void test_copy() {
@@ -56,6 +60,7 @@ public:
 
         // Copy non-empty vectors via copy constructor and assignment operator
         Matrix c = init_matrix("  [ 1 3 5 ; 0 2 0 ]");
+	    TS_ASSERT(c.rows() == 2 && c.cols() == 3);
         Matrix d(c);
         check_equal(c, d);
         Matrix h = d;
@@ -200,16 +205,32 @@ public:
     }
 
 private:
-    void check_equal(const Matrix& m, const Matrix& n) {
-        TS_ASSERT_EQUALS(m.rows(), n.rows());
-        TS_ASSERT_EQUALS(m.cols(), n.cols());
-        
-        for(size_t row = 0; row < m.rows(); ++row) {
-            for(size_t col = 0; col < m.cols(); ++col) {
-                TS_ASSERT_EQUALS(m[row][col], n[row][col]);
-            }
-        }    
-    }
+	void check_all_zero(const Matrix& m) {
+		for(size_t r = 0; r < m.rows(); ++r) {
+			for(size_t c = 0; c < m.cols(); ++c) {
+				TS_ASSERT_EQUALS(m[r][c], 0);
+			}
+		}
+	}
+	
+	void check_identity(const Matrix& m) {
+		for(size_t r = 0; r < m.rows(); ++r) {
+			for(size_t c = 0; c < m.cols(); ++c) {
+				TS_ASSERT_EQUALS(m[r][c], r == c ? 1 : 0);
+			}
+		}
+	}
+	
+	void check_equal(const Matrix& m, const Matrix& n) {
+		TS_ASSERT_EQUALS(m.rows(), n.rows());
+		TS_ASSERT_EQUALS(m.cols(), n.cols());
+
+		for(size_t row = 0; row < m.rows(); ++row) {
+			for(size_t col = 0; col < m.cols(); ++col) {
+				TS_ASSERT_EQUALS(m[row][col], n[row][col]);
+			}
+		}    
+	}
 
 };
 #endif

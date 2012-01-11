@@ -20,7 +20,6 @@ public:
     Matrix( const Matrix& );
     Matrix(std::size_t size);   // changed from int to std::size_t
     ~Matrix( );
-
     Matrix(int size);   // Obsolete
 
 
