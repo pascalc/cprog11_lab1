@@ -129,11 +129,28 @@ public:
         }
     }
 
+    void test_bitwise_invert() {
+        Vector<bool> empty(0);
+        ~empty;
+        TS_ASSERT_EQUALS(empty.size(), 0);
+
+        Vector<bool> one(1, true);
+        ~one;
+        TS_ASSERT_EQUALS(one[0], false);
+        ~one;
+        TS_ASSERT_EQUALS(one[0], true);
+
+        Vector<bool> a(100, true);
+        ~a;
+        TS_ASSERT_EQUALS(a[0], false);
+        TS_ASSERT_EQUALS(a[99], false);
+    }
+
     void test_empty_weights() {
         Vector<bool> empty;
         TS_ASSERT_EQUALS(empty.weight1(), 0);
         TS_ASSERT_EQUALS(empty.weight2(), 0);
-        //TS_ASSERT_EQUALS(empty.weight3(), 0);
+        TS_ASSERT_EQUALS(empty.weight3(), 0);
     }
 
     void test_weight1() {
@@ -160,6 +177,19 @@ public:
         TS_ASSERT_EQUALS(b.weight2(), 0);
         b[31] = true;
         TS_ASSERT_EQUALS(b.weight2(), 1);
+    }
+
+    void test_weight3() {
+        TS_TRACE("Testing count. Second implementation");
+        Vector<bool> a(50, true);
+        TS_ASSERT_EQUALS(a.weight3(), 50);
+        a[49] = false;
+        TS_ASSERT_EQUALS(a.weight3(), 49);
+
+        Vector<bool> b(32, false);
+        TS_ASSERT_EQUALS(b.weight3(), 0);
+        b[31] = true;
+        TS_ASSERT_EQUALS(b.weight3(), 1);
     }
 
 };
