@@ -5,7 +5,7 @@
 #include <list>
 #include <vector>
 
-#include "../ex1.1/oMatrix.h"
+#include "oMatrix.h"
 
 #define WALL 1 // "#"
 #define EMPTY 2 // " "
@@ -13,9 +13,11 @@
 #define VISITED 1
 #define NOT_VISITED 2
 
+//using namespace std;
+
 class MazeSolver {
 	public:
-		MazeSolver() : matrix(0) { }
+		MazeSolver() : m_matrix(0) { }
 
 		void read(const char**);
 		void print_path();
@@ -32,7 +34,7 @@ class MazeSolver {
 				m_x(x),
 				m_y(y) {}
 			friend struct Node;
-			friend std::operator<<(std::ostream& os, const Pair& p) {
+			friend std::ostream& operator<<(std::ostream& os, const Pair& p) {
 				return os << "(" << p.m_x << "," << p.m_y << ")"; 
 			}
 		};
@@ -44,7 +46,7 @@ class MazeSolver {
 				m_pair(pair),
 				m_parent(parent) { }
 
-			friend std::operator<<(std::ostream& os, const Node& n) {
+			friend std::ostream& operator<<(std::ostream& os, const Node& n) {
 				os << n.(*m_pair);
 				if(m_parent != 0) {
 					os << " [Parent: " << n.(*m_parent) << "]";
@@ -54,8 +56,19 @@ class MazeSolver {
 		};
 };
 
-void MazeSolver::read(const char** m) {
+void MazeSolver::read(const char** data) {
+	unsigned int rows, cols;
 	
+	for (unsigned int i = 0; data[i] != 0; ++i) {
+		if(cols == 0) {
+			while(data[i][cols] != 0) {
+				++cols;
+			}
+		}
+		++rows;
+	}
+
+	m_matrix = new Matrix(rows, cols);
 }
 
 void MazeSolver::solve(const Matrix& m) {

@@ -58,7 +58,7 @@ Matrix& Matrix::operator=(const Matrix& m) {
 }
 
 
-void Matrix::check_dimensions(const Matrix& m) const { 
+void Matrix::validate(const Matrix& m) const { 
     if(m.rows() != m_rows || m.cols() != m_cols)
         throw std::logic_error("Matrix dimensions must agree");
 }
@@ -67,7 +67,7 @@ int Matrix::add(int a, int b) const { return a+b; }
 int Matrix::sub(int a, int b) const { return a-b; }
 
 Matrix Matrix::m_iterator(const Matrix& m, int (*ptr2operator)(int, int) ) {
-    check_dimensions(m);
+    validate(m);
     
     Matrix res(*this);
     for(size_t row = 0; row < m.rows(); ++row)
@@ -80,7 +80,7 @@ Matrix Matrix::m_iterator(const Matrix& m, int (*ptr2operator)(int, int) ) {
 
 Matrix Matrix::operator+(const Matrix& m) const { 
     //return m_iterator(m, &add);
-    check_dimensions(m);
+    validate(m);
     Matrix res(*this);
 	for(size_t r = 0; r < m_rows; ++r) {
 		for(size_t c = 0; c < m_cols; ++c) {
@@ -93,7 +93,7 @@ Matrix Matrix::operator+(const Matrix& m) const {
 
 Matrix Matrix::operator-(const Matrix& m) const {
     //return m_iterator(m, &sub);
-    check_dimensions(m);
+    validate(m);
     Matrix res(*this);
     for(size_t r = 0; r < m_rows; ++r)
         for(size_t c = 0; c < m_cols; ++c)
