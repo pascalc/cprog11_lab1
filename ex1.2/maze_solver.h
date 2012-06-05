@@ -2,98 +2,67 @@
 #define MAZE_SOLVER_H
 
 #include <algorithm>
-#include <list>
-#include <vector>
+#include <stack>
+#include <iostream>
 
 #include "oMatrix.h"
 
 #define WALL 1 // "#"
 #define EMPTY 2 // " "
+#define SOLUTION 3 // "."
 
 #define VISITED 1
 #define NOT_VISITED 2
 
-//using namespace std;
+namespace maze_solver 
+{
 
 class MazeSolver {
 	public:
-		MazeSolver() : m_matrix(0) { }
+		MazeSolver() : matrix_(0), visited_(0), path_() { }
 
 		void read(const char**);
-		void print_path();
-
-	private:
-		Matrix m_matrix, m_visited;
-		list<Node> m_path;
-
-		void solve(const Matrix&);
+		void solve();
+		void printPath() const;
 
 		struct Pair {
-			int m_x, m_y;
-			Pair(int x, int y) :
-				m_x(x),
-				m_y(y) {}
+			const int x_, y_;
+			Pair(const int x, const int y) : x_(x), y_(y) {}
 			friend struct Node;
-			friend std::ostream& operator<<(std::ostream& os, const Pair& p) {
-				return os << "(" << p.m_x << "," << p.m_y << ")"; 
+			friend std::ostream& operator<<(std::ostream& os, const Pair& pair) {
+				return os << "(" << pair.x_ << "," << pair.y_ << ")";
+			}
+			friend bool operator==(const Pair& p1, const Pair& p2) {
+				return p1.x_ == p2.x_ && p1.y_ == p2.y_;
 			}
 		};
 
-		struct Node	{
-			const Pair* m_pair;
-			const Node* m_parent;
-			Node(const Pair& pair, const Node& parent) : 
-				m_pair(pair),
-				m_parent(parent) { }
-
-			friend std::ostream& operator<<(std::ostream& os, const Node& n) {
-				os << n.(*m_pair);
-				if(m_parent != 0) {
-					os << " [Parent: " << n.(*m_parent) << "]";
+		struct Node {
+			const Pair* pair_;
+			const Node* parent_;
+			Node(const Pair& pair) :
+				pair_(&pair), parent_(0) {}
+			Node(const Pair& pair, const Node& parent) :
+				pair_(&pair), parent_(&parent) {}
+			int x() { return (*pair_).x_; }
+			int y() { return (*pair_).y_; }
+			friend std::ostream& operator<<(std::ostream& os, const Node& node) {
+				if(node.parent_ != 0) {
+					Node n = *(node.parent_);
+					os << *(n.pair_) << " -> ";
 				}
-				return os;
+				return os << *(node.pair_);
 			}
 		};
+
+		private:
+			const Pair findEntrance();
+			const Pair findExit();
+
+			Matrix matrix_, visited_;
+			std::stack<Node*> path_;
 };
 
-void MazeSolver::read(const char** data) {
-	unsigned int rows, cols;
-	
-	for (unsigned int i = 0; data[i] != 0; ++i) {
-		if(cols == 0) {
-			while(data[i][cols] != 0) {
-				++cols;
-			}
-		}
-		++rows;
-	}
-
-	m_matrix = new Matrix(rows, cols);
-}
-
-void MazeSolver::solve(const Matrix& m) {
-	// m_path.push_back( node( pair(x,y), 0 ) ); // start (entrance) node
-	// m_visited[x][y] = VISITED;
-	// bool found_exit = false;
-	/*while(!found_exit) {
-		Node tmp = m_path.back();
-	}*/
-
-	// perform DFS/BFS
-}
-
-void MazeSolver::print_path() {
-	while(!m_path.empty()) {
-		std::cout << m_path.pop_front();
-	}
-	std::cout << std::endl;
-	/*
-	if(node->m_parent == 0)
-		std::cout << "Start at " << node->m_parent << " -> ";
-	print_path(node->m_parent);
-
-	std::cout << " -> " << node;
-	*/
 }
 
 #endif
