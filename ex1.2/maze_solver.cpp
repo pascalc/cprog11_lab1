@@ -1,131 +1,206 @@
-#include "maze_solver.h"
+#include <stdio.h>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <stack>
+#include <exception>
 
-namespace maze_solver 
+#include "oMatrix.h"
+
+#define WALL 1
+#define PATH 0
+
+struct Pair {
+	const int m_x, m_y;
+	Pair(const int x, const int y) :
+		m_x(x), m_y(y) {}
+	friend struct Node;
+	friend std::ostream& operator<<(std::ostream& os, const Pair& pair) {
+		return os << "(" << pair.m_x << "," << pair.m_y << ")";
+	}
+	friend bool operator==(const Pair& p1, const Pair& p2) {
+		return p1.m_x == p2.m_x && p1.m_y == p2.m_y;
+	}
+};
+
+struct Node {
+	const Pair* m_pair;
+	const Node* m_parent;
+	Node(const Pair& pair) :
+		m_pair(&pair), m_parent(0) {}
+	Node(const Pair& pair, const Node& parent) :
+		m_pair(&pair), m_parent(&parent) {}
+	int x() { return (*m_pair).m_x; }
+	int y() { return (*m_pair).m_y; }
+	friend std::ostream& operator<<(std::ostream& os, const Node& node) {
+		if(node.m_parent != 0) {
+			Node n = *(node.m_parent);
+			os << *(n.m_pair) << " -> ";
+		}
+		return os << *(node.m_pair);
+	}
+};
+
+Matrix* read(char *);
+Pair* findEntrance(const Matrix&);
+Pair* findExit(const Matrix&);
+void solve(const Matrix&, const Pair&, const Pair&);
+void solve(const Matrix&);
+void printSolution(const Matrix&, const Pair&, Node&);
+
+int main(int argc, char* argv[])
 {
-
-void MazeSolver::read(const char** data) {
-	unsigned int rows = 0, cols = 0, i = 0, j = 0;
-
-	for (; data[i] != 0; ++i) {
-		if(cols == 0) {
-			while(data[i][cols] != 0) {
-				++cols;
-			}
-		}
-		++rows;
+	if(argc > 1)
+	{
+		// read matrix from file
+		Matrix * m = read(argv[1]);
+		solve(*m);
 	}
-	std::cout << "Counted " << rows << " rows and " << cols << " columns" << std::endl;
-	Matrix matrix(rows, cols);
-	std::cout << matrix;
-	this->matrix_ = matrix;
-	for(i = 0; i < rows; ++i) {
-		for(j = 0; j < cols; ++j) {
-			this->matrix_[i][j] = (data[i][j] == '#') ? WALL : EMPTY;
-		}
+	else
+	{
+		printf("usage: ./%s <file>\n", argv[0]);
 	}
-	std::cout << "Created matrix" << std::endl << this->matrix_ << std::endl;
+	return 0;
 }
 
-void MazeSolver::solve() {
-	std::cout << (*this).matrix_;
-	const Pair start = findEntrance();
-	const Pair finish = findExit();
-	std::cout << "Start: " << start << std::endl << "Finish: " << finish << std::endl;
-	for(unsigned int i = 0; i < matrix_.rows(); ++i) {
-		for(unsigned int j = 0; j < matrix_.cols(); ++j) {
-			visited_[i][j] = NOT_VISITED;
+Matrix* read(char * file)
+{
+	std::string line;
+	std::ifstream fileIn;
+	fileIn.open(file);
+	if(fileIn.is_open() == false)
+	{
+		 printf("Failed to open file %s\n",file);
+	}
+	int columns = 0, rows = 0;
+	// count number of rows and columns
+	while(fileIn.eof() == false)
+	{
+		std::getline(fileIn, line);
+		if(columns == 0)
+		{
+			while(line[++columns] != '\0');
+		}
+		rows++;
+	}
+	fileIn.close();
+	Matrix *m = new Matrix(rows,columns);
+	fileIn.open(file);
+	for(int i = 0; i < rows; ++i) {
+		std::getline(fileIn,line);
+		for(int j = 0; j < columns; ++j) {
+			(*m)[i][j] = (line[j] == '#') ? 0 : 1;
 		}
 	}
+	return m;
+}
 
+Pair* findEntrance(const Matrix& m) {
+	unsigned int x = 0, y = 0, i = 0;
+	// search first row
+	for (; i < m.cols(); ++i) {
+		if(m[0][i] == 1) {
+			y = i;
+		}
+	}
+	// search first column
+	for (i = 0; i < m.rows(); ++i) {
+		if(m[i][0] == 1) {
+			x = i;
+		}
+	}
+	Pair* p = new Pair(x,y);
+	return p;
+}
+
+Pair* findExit(const Matrix& m) {
+	unsigned int x = m.rows()-1, y = m.cols()-1, i = 0;
+	// search last row
+	for (; i < m.cols(); ++i) {
+		if(m[m.rows()-1][i] == 1) {
+			y = i;
+		}
+	}
+	// search last column
+	for (i = 0; i < m.rows(); ++i) {
+		if(m[i][m.cols()-1] == 1) {
+			x = i;
+		}
+	}
+	Pair* p = new Pair(x,y);
+	return p;
+}
+
+void solve(const Matrix& m)
+{
+	const Pair* start = findEntrance(m);
+	const Pair* end = findExit(m);
+	solve(m,*start,*end);
+}
+
+void solve(const Matrix& m, const Pair& start, const Pair& exit) {
+	printf("\nCommensing search...\nMatrix size is %ix%i\n", m.rows(), m.cols());
+	std::cout << "Starting at " << start << std::endl << "Finish at " << exit << std::endl;
+	const int VISITED = 1;
+	std::stack<Node*> path;
+	Matrix* visited = new Matrix(m.rows(), m.cols());
 	int left[] = {-1,0}, right[] = {1,0}, up[] = {0,1}, down[] = {0,-1};
 	const int* adjacent[] = {left, right, up, down}; // left, right, up, down (x,y) where (0,0) is upper left corner
-	path_.push(new Node(start));
-	while(!path_.empty()) {
-		Node* current = path_.top();
-		visited_[(*current).x()][(*current).y()] = VISITED;
-		//std::cout << "Currently at " << *(*current).m_pair << std::endl;
-		if(*(*current).pair_ == finish) {
-			// std::cout << "Reached the exit, terminating search!" << std::endl;
-			// std::cout << "Last path visited " << *current << std::endl;
+	path.push(new Node(start));
+	while(!path.empty()) {
+		Node* current = path.top();
+		(*visited)[(*current).x()][(*current).y()] = VISITED;
+		if(*(*current).m_pair == exit) {
 			break;
 		}
-		path_.pop();
+		path.pop();
 		// find adjacent cells
 		for (int i = 0; i < 4; ++i) {
 			const int* dir = adjacent[i];
 			unsigned int x = (*current).x() + dir[0], y = (*current).y() + dir[1];
 			Pair* p = new Pair(x,y);
 			Node* n = new Node(*p, *current);
-			// check if adjacent cells are not visited and allowed transitions
-			if(x < matrix_.rows() && y < matrix_.cols()) {
-				if(matrix_[x][y] == EMPTY && visited_[x][y] == NOT_VISITED) {
-					path_.push(n);
+			// if adjacent cells are not visited and allowed transitions, create node and add to queue.
+			if(x < m.rows() && y < m.cols()) {
+				if(m[x][y] == 1 && (*visited)[x][y] == 0) {
+					path.push(n);
 				}
 			}
 		}
 	}
+	if(path.empty()) {
+		std::cout << "Could not find any solution" << std::endl;
+	}
+	else
+	{
+		printSolution(m,start,*path.top());
+	}
 }
 
-const MazeSolver::Pair MazeSolver::findEntrance() {
-	unsigned int x = 0, y = 0, i = 0;
-	// search first row
-	for (; i < matrix_.cols(); ++i) {
-		if(matrix_[0][i] == EMPTY) {
-			y = i;
-		}
-	}
-	// search first column
-	for (i = 0; i < matrix_.rows(); ++i) {
-		if(matrix_[i][0] == EMPTY) {
-			x = i;
-		}
-	}
-	Pair p(x,y);
-	return p;
-}
+void printSolution(const Matrix& m, const Pair& start, Node& last)
+{
+	std::cout << "\n** Printing solution **\n";
 
-const MazeSolver::Pair MazeSolver::findExit() {
-	unsigned int x = matrix_.rows()-1, y = matrix_.cols()-1, i = 0;
-	// search last row
-	for (; i < y+1; ++i) {
-		if(matrix_[x][i] == EMPTY) {
-			y = i;
-		}
+	Matrix solution(m);
+	while(last.m_parent != 0) {
+		solution[last.x()][last.y()] = 2;
+		last = *(last.m_parent);
 	}
-	// search last column
-	for (i = 0; i < x+1; ++i) {
-		if(matrix_[i][y] == EMPTY) {
-			x = i;
-		}
-	}
-	Pair p(x,y);
-	return p;
-}
-
-void MazeSolver::printPath() const {
-	Node last = *(path_.top());
-	Matrix sol(visited_);
-
-	while(last.parent_ != 0) {
-			sol[last.x()][last.y()] = SOLUTION;
-			last = (*last.parent_);
-	}
-	sol[last.x()][last.y()] = SOLUTION;
-	for (unsigned int i = 0; i < matrix_.rows(); ++i) {
-		for (unsigned int j = 0; j < matrix_.cols(); ++j) {
-			switch(sol[i][j]) {
-				case EMPTY:
+	solution[start.m_x][start.m_y] = 2;
+	for (unsigned int i = 0; i < m.rows(); ++i) {
+		for (unsigned int j = 0; j < m.cols(); ++j) {
+			switch(solution[i][j]) {
+				case 1:
 					std::cout << " ";
 					break;
-				case SOLUTION:
+				case 2:
 					std::cout << ".";
 					break;
-				default: // WALL
+				default:
 					std::cout << "#";
 			}
 		}
 		std::cout << std::endl;
 	}
-}
-
 }
